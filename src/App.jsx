@@ -15,11 +15,31 @@ import {
 import Interview from './components/Interview';
 import KnowledgeBase from './components/KnowledgeBase';
 import Weakness from './components/Weakness';
+import Login from './components/Login';
+import { LogOut } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('interview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [prefillKeywords, setPrefillKeywords] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [username, setUsername] = useState(localStorage.getItem('username') || '');
+
+  const handleLoginSuccess = (user) => {
+    setIsLoggedIn(true);
+    setUsername(user);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setIsLoggedIn(false);
+    setUsername('');
+  };
+
+  if (!isLoggedIn) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   const handleStartPractice = (keywords) => {
     setPrefillKeywords(keywords);
@@ -82,16 +102,25 @@ function App() {
         <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
           <div className="flex items-center">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
-              JD
+              {username ? username[0].toUpperCase() : 'U'}
             </div>
             {isSidebarOpen && (
-              <div className="ml-3 overflow-hidden">
-                <p className="text-sm font-bold truncate">John Doe</p>
+              <div className="ml-3 overflow-hidden flex-1">
+                <p className="text-sm font-bold truncate">{username || 'User'}</p>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse" />
-                  <p className="text-xs text-slate-500 font-medium">Pro Member</p>
+                  <p className="text-xs text-slate-500 font-medium">在线</p>
                 </div>
               </div>
+            )}
+            {isSidebarOpen && (
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                title="退出登录"
+              >
+                <LogOut size={18} />
+              </button>
             )}
           </div>
         </div>
