@@ -6,7 +6,7 @@ import mammoth from 'mammoth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
-const Interview = ({ prefillKeywords }) => {
+const Interview = ({ prefillKeywords, username }) => {
   const [mode, setMode] = useState(prefillKeywords ? 'self' : 'company'); // company, self, resume
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
@@ -101,7 +101,7 @@ const Interview = ({ prefillKeywords }) => {
         position: formData.position,
         difficulty: formData.difficulty,
         question_count: parseInt(formData.question_count),
-        user_id: 'user123'
+        user_id: username || 'guest'
       };
     } else if (mode === 'self') {
       url = `${API_BASE_URL}/interview/self/generate_self_interview/`;
@@ -111,7 +111,7 @@ const Interview = ({ prefillKeywords }) => {
         question_count: parseInt(formData.question_count),
         knowlage_name: "[]",
         history: [],
-        user_id: 'user123'
+        user_id: username || 'guest'
       };
     } else if (mode === 'resume') {
       if (!resumeFile) {
@@ -371,7 +371,7 @@ const Interview = ({ prefillKeywords }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: 'user123',
+          user_id: username || 'guest',
           question: content.split('\n')[0] || "面试题",
           user_answer: userAnswer,
           ai_feedback: evaluation,

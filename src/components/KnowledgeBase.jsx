@@ -5,7 +5,7 @@ import mammoth from 'mammoth';
 // API 基础 URL - 支持环境变量和默认值
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
-const KnowledgeBase = () => {
+const KnowledgeBase = ({ username }) => {
   const [file, setFile] = useState(null);
   const [knowledgeBaseName, setKnowledgeBaseName] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -146,11 +146,18 @@ const KnowledgeBase = () => {
         setPreviewUrl(null);
         setPreviewContent('');
         setShowPreview(false);
+        
         // 刷新知识库列表
         await loadKnowledgeBases();
-        // 如果已选中该知识库，刷新文件列表
-        if (selectedKB === data.data?.knowledge_base) {
-          await loadKnowledgeBaseFiles(selectedKB);
+        
+        // 自动展开新上传的知识库
+        const kbName = data.data?.knowledge_base;
+        if (kbName) {
+          setSelectedKB(kbName);
+          // 加载该知识库的文件列表
+          setTimeout(() => {
+            loadKnowledgeBaseFiles(kbName);
+          }, 100);
         }
       } else {
         alert(`上传失败: ${data.error || '未知错误'}`);

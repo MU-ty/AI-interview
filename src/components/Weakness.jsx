@@ -3,11 +3,11 @@ import { BrainCircuit, History, AlertTriangle, CheckCircle, BarChart3, Loader2, 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
-const Weakness = ({ onStartPractice }) => {
+const Weakness = ({ onStartPractice, username }) => {
   const [wrongAnswers, setWrongAnswers] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
-  const userId = 'user123'; // 模拟当前用户
+  const userId = username || 'guest'; // 使用当前登录用户
 
   useEffect(() => {
     fetchData();
