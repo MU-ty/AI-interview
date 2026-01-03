@@ -157,13 +157,36 @@ const Interview = ({ prefillKeywords }) => {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
         const chunk = decoder.decode(value, { stream: true });
-        setContent(prev => prev + chunk);
+        buffer += chunk;
+        
+        // 处理 SSE 格式: data: {json}\n\n
+        const lines = buffer.split('\n\n');
+        buffer = lines[lines.length - 1]; // 保留未完成的行
+        
+        // 处理完成的行
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.slice(6); // 移除 'data: ' 前缀
+              const data = JSON.parse(jsonStr);
+              
+              // 从 SSE 响应中提取文本内容
+              if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                setContent(prev => prev + data.choices[0].delta.content);
+              }
+            } catch (e) {
+              // 解析错误时跳过
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -190,12 +213,36 @@ const Interview = ({ prefillKeywords }) => {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
+        
         const chunk = decoder.decode(value, { stream: true });
-        setEvaluation(prev => prev + chunk);
+        buffer += chunk;
+        
+        // 处理 SSE 格式: data: {json}\n\n
+        const lines = buffer.split('\n\n');
+        buffer = lines[lines.length - 1]; // 保留未完成的行
+        
+        // 处理完成的行
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.slice(6); // 移除 'data: ' 前缀
+              const data = JSON.parse(jsonStr);
+              
+              // 从 SSE 响应中提取文本内容
+              if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                setEvaluation(prev => prev + data.choices[0].delta.content);
+              }
+            } catch (e) {
+              // 解析错误时跳过
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Eval Error:', error);
