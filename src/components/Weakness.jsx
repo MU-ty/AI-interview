@@ -16,9 +16,18 @@ const Weakness = ({ onStartPractice, username }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
       const [waRes, anRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/interview/weakness/wrong_answers/${userId}`),
-        fetch(`${API_BASE_URL}/interview/weakness/weakness_analysis/${userId}`)
+        fetch(`${API_BASE_URL}/interview/weakness/wrong_answers/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }),
+        fetch(`${API_BASE_URL}/interview/weakness/weakness_analysis/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
       ]);
       
       const waData = await waRes.json();

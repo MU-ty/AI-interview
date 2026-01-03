@@ -36,7 +36,12 @@ const KnowledgeBase = ({ username }) => {
   const loadKnowledgeBases = async () => {
     setLoadingKBList(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       if (data.code === 200) {
         setKnowledgeBases(data.data || []);
@@ -50,7 +55,12 @@ const KnowledgeBase = ({ username }) => {
 
   const loadKnowledgeBaseFiles = async (kbName) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/knowledge_base_files/?knowlage_name=${encodeURIComponent(kbName)}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/knowledge_base_files/?knowlage_name=${encodeURIComponent(kbName)}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       if (data.code === 200) {
         setKBFiles(data.data || []);
@@ -72,8 +82,14 @@ const KnowledgeBase = ({ username }) => {
     setShowUploadedPreview(true);
     
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(
-        `${API_BASE_URL}/knowledge_base_file_preview/?knowlage_name=${encodeURIComponent(kbName)}&filename=${encodeURIComponent(fileName)}`
+        `${API_BASE_URL}/knowledge_base_file_preview/?knowlage_name=${encodeURIComponent(kbName)}&filename=${encodeURIComponent(fileName)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       const data = await response.json();
       
@@ -134,8 +150,12 @@ const KnowledgeBase = ({ username }) => {
     formData.append('knowlage_name', knowledgeBaseName);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/knowlage_upload/`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
       const data = await response.json();

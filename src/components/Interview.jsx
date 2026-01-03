@@ -131,10 +131,12 @@ const Interview = ({ prefillKeywords, username }) => {
         try {
           console.log(`尝试上传简历，重试次数: ${retryCount}`);
           
+          const token = localStorage.getItem('token');
           const response = await fetch(`${API_BASE_URL}/interview/resume/upload_resume/`, {
             method: 'POST',
             body: uploadFormData,
             headers: {
+              'Authorization': `Bearer ${token}`
               // 让浏览器自动设置 multipart/form-data
             },
             signal: AbortSignal.timeout(60000) // 60秒超时
@@ -232,10 +234,12 @@ const Interview = ({ prefillKeywords, username }) => {
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(body)
       });
@@ -289,9 +293,13 @@ const Interview = ({ prefillKeywords, username }) => {
     setEvaluation('');
     
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/interview/weakness/submit_answer/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           question: content.split('\n')[0] || "面试题", // 简单取第一行作为题目
           user_answer: userAnswer
@@ -367,9 +375,13 @@ const Interview = ({ prefillKeywords, username }) => {
 
   const saveToWrongAnswers = async () => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/interview/weakness/save_evaluation/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           user_id: username || 'guest',
           question: content.split('\n')[0] || "面试题",
