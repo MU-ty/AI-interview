@@ -10,12 +10,14 @@ import {
   ChevronRight,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Users
 } from 'lucide-react';
 import Interview from './components/Interview';
 import KnowledgeBase from './components/KnowledgeBase';
 import Weakness from './components/Weakness';
 import Login from './components/Login';
+import Forum from './components/Forum';
 import { LogOut } from 'lucide-react';
 
 function App() {
@@ -50,6 +52,7 @@ function App() {
     { id: 'interview', name: 'AI 面试', icon: MessageSquare },
     { id: 'knowledge', name: '知识库管理', icon: BookOpen },
     { id: 'weakness', name: '薄弱点强化', icon: BrainCircuit },
+    { id: 'forum', name: '讨论论坛', icon: Users },
   ];
 
   return (
@@ -141,6 +144,7 @@ function App() {
               {activeTab === 'interview' && '准备好迎接你的下一次挑战了吗？'}
               {activeTab === 'knowledge' && '管理你的个人知识库，提升 AI 准确度'}
               {activeTab === 'weakness' && '针对性练习，攻克你的知识盲区'}
+              {activeTab === 'forum' && '与其他用户交流学习经验和面试心得'}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -159,6 +163,7 @@ function App() {
             {activeTab === 'interview' && <Interview prefillKeywords={prefillKeywords} username={username} />}
             {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
             {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
+            {activeTab === 'forum' && <Forum username={username} />}
           </div>
         </div>
       </main>
