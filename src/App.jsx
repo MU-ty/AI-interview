@@ -156,9 +156,9 @@ function App() {
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           <div className="max-w-6xl mx-auto">
-            {activeTab === 'interview' && <Interview prefillKeywords={prefillKeywords} />}
-            {activeTab === 'knowledge' && <KnowledgeBase />}
-            {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} />}
+            {activeTab === 'interview' && <Interview prefillKeywords={prefillKeywords} username={username} />}
+            {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
+            {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
           </div>
         </div>
       </main>
