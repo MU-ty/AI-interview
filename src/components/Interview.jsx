@@ -134,7 +134,8 @@ const Interview = ({ prefillKeywords }) => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
-        let fullText = '';
+        let jsonAnalysis = null;
+        let lastJsonObject = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -142,7 +143,6 @@ const Interview = ({ prefillKeywords }) => {
           
           const chunk = decoder.decode(value, { stream: true });
           buffer += chunk;
-          fullText += chunk;
           
           // 处理 SSE 格式: data: {json}\n\n
           const lines = buffer.split('\n\n');
@@ -156,8 +156,16 @@ const Interview = ({ prefillKeywords }) => {
                 const jsonStr = line.slice(6); // 移除 'data: ' 前缀
                 const data = JSON.parse(jsonStr);
                 
-                // 从 SSE 响应中提取文本内容
-                if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                // 保存所有 JSON 对象用于检查
+                lastJsonObject = data;
+                
+                // 检查是否是简历分析的JSON（包含basic_info）
+                if (data.basic_info && (data.technical_skills !== undefined || data.project_experience !== undefined)) {
+                  // 这是简历分析结果
+                  jsonAnalysis = data;
+                  console.log('检测到简历分析结果:', jsonAnalysis);
+                } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                  // 这是流式文本内容
                   setContent(prev => prev + data.choices[0].delta.content);
                 }
               } catch (e) {
@@ -167,15 +175,14 @@ const Interview = ({ prefillKeywords }) => {
           }
         }
         
-        // 尝试从完整文本中解析JSON
-        try {
-          const jsonMatch = fullText.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const analysis = JSON.parse(jsonMatch[0]);
-            setResumeAnalysis(analysis);
-          }
-        } catch (e) {
-          console.log('未找到JSON格式的解析结果');
+        // 设置解析结果
+        if (jsonAnalysis) {
+          setResumeAnalysis(jsonAnalysis);
+          console.log('简历分析已设置');
+        } else if (lastJsonObject && lastJsonObject.basic_info) {
+          // 如果没有明确标记，但最后一个JSON对象包含basic_info，也使用它
+          setResumeAnalysis(lastJsonObject);
+          console.log('使用最后的JSON对象作为简历分析');
         }
         
         setLoading(false);
