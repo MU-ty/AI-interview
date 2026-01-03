@@ -19,6 +19,7 @@ const Interview = ({ prefillKeywords }) => {
   const [evaluation, setEvaluation] = useState('');
   const [evaluating, setEvaluating] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [resumeAnalysis, setResumeAnalysis] = useState(null);
   
   const [formData, setFormData] = useState({
     company_name: '阿里巴巴',
@@ -133,6 +134,7 @@ const Interview = ({ prefillKeywords }) => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let fullText = '';
 
         while (true) {
           const { done, value } = await reader.read();
@@ -140,6 +142,7 @@ const Interview = ({ prefillKeywords }) => {
           
           const chunk = decoder.decode(value, { stream: true });
           buffer += chunk;
+          fullText += chunk;
           
           // 处理 SSE 格式: data: {json}\n\n
           const lines = buffer.split('\n\n');
@@ -162,6 +165,17 @@ const Interview = ({ prefillKeywords }) => {
               }
             }
           }
+        }
+        
+        // 尝试从完整文本中解析JSON
+        try {
+          const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const analysis = JSON.parse(jsonMatch[0]);
+            setResumeAnalysis(analysis);
+          }
+        } catch (e) {
+          console.log('未找到JSON格式的解析结果');
         }
         
         setLoading(false);
@@ -280,6 +294,33 @@ const Interview = ({ prefillKeywords }) => {
       setEvaluating(false);
     }
   };
+
+  // 计算简历评分
+  const calculateResumeScore = (analysis) => {
+    if (!analysis) return 0;
+    
+    let score = 60; // 基础分
+    
+    // 基本信息
+    if (analysis.basic_info) {
+      if (analysis.basic_info.work_years > 0) score += 10;
+      if (analysis.basic_info.education === '硕士' || analysis.basic_info.education === '博士') score += 5;
+    }
+    
+    // 技术技能
+    if (analysis.technical_skills && analysis.technical_skills.length > 0) {
+      score += Math.min(analysis.technical_skills.length * 3, 15);
+    }
+    
+    // 项目经验
+    if (analysis.project_experience && analysis.project_experience.length > 0) {
+      score += Math.min(analysis.project_experience.length * 3, 15);
+    }
+    
+    return Math.min(score, 100);
+  };
+
+  const resumeScore = resumeAnalysis ? calculateResumeScore(resumeAnalysis) : 0;
 
   const saveToWrongAnswers = async () => {
     try {
@@ -470,91 +511,264 @@ const Interview = ({ prefillKeywords }) => {
       </div>
 
       {/* Output Area */}
-      {(content || loading) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in slide-in-from-bottom-8 duration-500">
-          {/* Question Area */}
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col min-h-[500px]">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
-                  <Sparkles size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-800 dark:text-white">面试题目</h4>
-                  <p className="text-xs text-slate-500 font-medium">AI 实时生成</p>
+      {(content || resumeAnalysis || loading) && (
+        <div className={`grid gap-8 animate-in slide-in-from-bottom-8 duration-500 ${
+          resumeAnalysis && content ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 lg:grid-cols-2'
+        }`}>
+          {/* Resume Analysis Area */}
+          {resumeAnalysis && (
+            <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-[2rem] border border-indigo-200 dark:border-indigo-800/50 shadow-xl overflow-hidden flex flex-col">
+              <div className="p-6 border-b border-indigo-200 dark:border-indigo-800/50 bg-gradient-to-r from-indigo-600 to-violet-600 flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white">
+                    <FileUser size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white">简历分析</h4>
+                    <p className="text-xs text-white/80 font-medium">智能评估</p>
+                  </div>
                 </div>
               </div>
+
+              <div className="p-8 overflow-y-auto space-y-6">
+                {/* 总体评分 */}
+                <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-6 border-2 border-indigo-100 dark:border-indigo-800/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="font-bold text-slate-800 dark:text-white">综合评分</h5>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-3xl font-black text-indigo-600">{resumeScore}</div>
+                      <div className="text-sm text-slate-500">/100</div>
+                    </div>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-indigo-500 to-violet-500 h-3 rounded-full transition-all duration-500" 
+                      style={{width: `${resumeScore}%`}}
+                    ></div>
+                  </div>
+                  <div className="mt-3 flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>基础</span>
+                    <span>优秀</span>
+                  </div>
+                </div>
+
+                {/* 基本信息 */}
+                {resumeAnalysis.basic_info && (
+                  <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/50">
+                    <h5 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                      <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                      基本信息
+                    </h5>
+                    <div className="space-y-3">
+                      {resumeAnalysis.basic_info.education && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-indigo-500 font-bold text-lg">📚</span>
+                          <div className="flex-1">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">学历</p>
+                            <p className="text-slate-700 dark:text-slate-200 font-medium">{resumeAnalysis.basic_info.education}</p>
+                          </div>
+                        </div>
+                      )}
+                      {resumeAnalysis.basic_info.major && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-violet-500 font-bold text-lg">🎓</span>
+                          <div className="flex-1">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">专业</p>
+                            <p className="text-slate-700 dark:text-slate-200 font-medium">{resumeAnalysis.basic_info.major}</p>
+                          </div>
+                        </div>
+                      )}
+                      {resumeAnalysis.basic_info.work_years > 0 && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-orange-500 font-bold text-lg">⏱️</span>
+                          <div className="flex-1">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">工作年限</p>
+                            <p className="text-slate-700 dark:text-slate-200 font-medium">{resumeAnalysis.basic_info.work_years} 年</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 技术技能 */}
+                {resumeAnalysis.technical_skills && resumeAnalysis.technical_skills.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/50">
+                    <h5 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                      <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                      技术技能
+                    </h5>
+                    <div className="space-y-3">
+                      {resumeAnalysis.technical_skills.slice(0, 4).map((skill, idx) => (
+                        <div key={idx} className="flex items-start space-x-3">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-slate-700 dark:text-slate-200 font-bold">{skill.category}</p>
+                              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                skill.proficiency === '精通' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                                skill.proficiency === '熟练' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' :
+                                'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                              }`}>
+                                {skill.proficiency}
+                              </span>
+                            </div>
+                            {skill.skills && (
+                              <div className="flex flex-wrap gap-2">
+                                {skill.skills.slice(0, 3).map((s, i) => (
+                                  <span key={i} className="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-lg font-medium">
+                                    {s}
+                                  </span>
+                                ))}
+                                {skill.skills.length > 3 && (
+                                  <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-1 rounded-lg font-medium">
+                                    +{skill.skills.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 项目经验 */}
+                {resumeAnalysis.project_experience && resumeAnalysis.project_experience.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/50">
+                    <h5 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                      <span className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                      项目经验
+                    </h5>
+                    <div className="space-y-3">
+                      {resumeAnalysis.project_experience.slice(0, 2).map((project, idx) => (
+                        <div key={idx} className="border-l-4 border-purple-500 pl-4 py-2">
+                          <p className="font-semibold text-slate-800 dark:text-white">{project.project_name}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">{project.description}</p>
+                          {project.tech_stack && project.tech_stack.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {project.tech_stack.slice(0, 3).map((tech, i) => (
+                                <span key={i} className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded font-medium">
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 重点关注领域 */}
+                {resumeAnalysis.focus_areas && resumeAnalysis.focus_areas.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/50">
+                    <h5 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                      <span className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 flex items-center justify-center text-xs font-bold mr-2">4</span>
+                      重点关注
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {resumeAnalysis.focus_areas.map((area, idx) => (
+                        <span key={idx} className="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 px-4 py-2 rounded-full text-sm font-semibold border border-amber-200 dark:border-amber-800/50">
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <div 
-              ref={scrollRef}
-              className="p-8 overflow-y-auto prose dark:prose-invert max-w-none prose-indigo prose-p:leading-relaxed"
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content}
-              </ReactMarkdown>
-              {loading && !content && (
-                <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                  <Loader2 className="animate-spin text-indigo-500" size={40} />
-                  <p className="text-slate-500 font-medium animate-pulse">正在连接 AI 引擎...</p>
+          )}
+
+          {/* Question Area */}
+          {content && (
+            <div className={`bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col ${
+              resumeAnalysis ? 'lg:col-span-2' : ''
+            } min-h-[500px]`}>
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800 dark:text-white">面试题目</h4>
+                    <p className="text-xs text-slate-500 font-medium">AI 实时生成</p>
+                  </div>
+                </div>
+              </div>
+              <div 
+                ref={scrollRef}
+                className="p-8 overflow-y-auto prose dark:prose-invert max-w-none prose-indigo prose-p:leading-relaxed"
+              >
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {content}
+                </ReactMarkdown>
+                {loading && !content && (
+                  <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                    <Loader2 className="animate-spin text-indigo-500" size={40} />
+                    <p className="text-slate-500 font-medium animate-pulse">正在连接 AI 引擎...</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Answer & Evaluation Area */}
+          {(content || resumeAnalysis) && (
+            <div className="flex flex-col space-y-6">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl p-8 flex flex-col flex-1">
+                <h4 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                  <Send size={18} className="mr-2 text-indigo-500" />
+                  你的回答
+                </h4>
+                <textarea 
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  placeholder="在此输入你的回答，点击下方按钮获取 AI 评估..."
+                  className="flex-1 w-full p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none font-medium text-slate-700 dark:text-slate-200"
+                />
+                <button 
+                  onClick={submitAnswer}
+                  disabled={evaluating || !userAnswer.trim()}
+                  className="mt-4 w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  {evaluating ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} />}
+                  <span>{evaluating ? 'AI 正在评估中...' : '提交回答并评估'}</span>
+                </button>
+              </div>
+
+              {evaluation && (
+                <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col animate-in zoom-in duration-300">
+                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-green-50/30 dark:bg-green-900/10 flex justify-between items-center">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center text-green-600">
+                        <CheckCircle size={20} />
+                      </div>
+                      <h4 className="font-bold text-slate-800 dark:text-white">AI 评估反馈</h4>
+                    </div>
+                    <button 
+                      onClick={saveToWrongAnswers}
+                      disabled={isSaved}
+                      className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        isSaved ? 'bg-green-500 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                      }`}
+                    >
+                      {isSaved ? <CheckCircle size={14} /> : <Save size={14} />}
+                      <span>{isSaved ? '已存入错题册' : '存入错题册'}</span>
+                    </button>
+                  </div>
+                  <div 
+                    ref={evalScrollRef}
+                    className="p-8 overflow-y-auto max-h-[300px] prose dark:prose-invert max-w-none text-sm leading-relaxed"
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {evaluation}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Answer & Evaluation Area */}
-          <div className="flex flex-col space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl p-8 flex flex-col flex-1">
-              <h4 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                <Send size={18} className="mr-2 text-indigo-500" />
-                你的回答
-              </h4>
-              <textarea 
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="在此输入你的回答，点击下方按钮获取 AI 评估..."
-                className="flex-1 w-full p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none font-medium text-slate-700 dark:text-slate-200"
-              />
-              <button 
-                onClick={submitAnswer}
-                disabled={evaluating || !userAnswer.trim()}
-                className="mt-4 w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                {evaluating ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} />}
-                <span>{evaluating ? 'AI 正在评估中...' : '提交回答并评估'}</span>
-              </button>
-            </div>
-
-            {evaluation && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col animate-in zoom-in duration-300">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-green-50/30 dark:bg-green-900/10 flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center text-green-600">
-                      <CheckCircle size={20} />
-                    </div>
-                    <h4 className="font-bold text-slate-800 dark:text-white">AI 评估反馈</h4>
-                  </div>
-                  <button 
-                    onClick={saveToWrongAnswers}
-                    disabled={isSaved}
-                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      isSaved ? 'bg-green-500 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
-                    }`}
-                  >
-                    {isSaved ? <CheckCircle size={14} /> : <Save size={14} />}
-                    <span>{isSaved ? '已存入错题册' : '存入错题册'}</span>
-                  </button>
-                </div>
-                <div 
-                  ref={evalScrollRef}
-                  className="p-8 overflow-y-auto max-h-[300px] prose dark:prose-invert max-w-none text-sm leading-relaxed"
-                >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {evaluation}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
 
