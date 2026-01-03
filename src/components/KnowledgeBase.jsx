@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, File, Search, Trash2, CheckCircle2, AlertCircle, Loader2, Sparkles, Eye, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload, File, Search, Trash2, CheckCircle2, AlertCircle, Loader2, Sparkles, Eye, X, FolderOpen } from 'lucide-react';
 import mammoth from 'mammoth';
 
 // API 基础 URL - 支持环境变量和默认值
@@ -16,6 +16,77 @@ const KnowledgeBase = () => {
   const [previewContent, setPreviewContent] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  
+  // 新增：知识库列表相关状态
+  const [knowledgeBases, setKnowledgeBases] = useState([]);
+  const [selectedKB, setSelectedKB] = useState(null);
+  const [kbFiles, setKBFiles] = useState([]);
+  const [loadingKBList, setLoadingKBList] = useState(false);
+  
+  // 新增：已上传文件预览状态
+  const [showUploadedPreview, setShowUploadedPreview] = useState(false);
+  const [uploadedPreviewData, setUploadedPreviewData] = useState(null);
+  const [previewingFile, setPreviewingFile] = useState(null);
+
+  // 加载知识库列表
+  useEffect(() => {
+    loadKnowledgeBases();
+  }, []);
+
+  const loadKnowledgeBases = async () => {
+    setLoadingKBList(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`);
+      const data = await response.json();
+      if (data.code === 200) {
+        setKnowledgeBases(data.data || []);
+      }
+    } catch (error) {
+      console.error('加载知识库列表失败:', error);
+    } finally {
+      setLoadingKBList(false);
+    }
+  };
+
+  const loadKnowledgeBaseFiles = async (kbName) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/knowledge_base_files/?knowlage_name=${encodeURIComponent(kbName)}`);
+      const data = await response.json();
+      if (data.code === 200) {
+        setKBFiles(data.data || []);
+      }
+    } catch (error) {
+      console.error('加载文件列表失败:', error);
+    }
+  };
+
+  const handleSelectKB = (kbName) => {
+    setSelectedKB(selectedKB === kbName ? null : kbName);
+    if (selectedKB !== kbName) {
+      loadKnowledgeBaseFiles(kbName);
+    }
+  };
+
+  const previewUploadedFile = async (kbName, fileName) => {
+    setPreviewingFile(fileName);
+    setShowUploadedPreview(true);
+    
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/knowledge_base_file_preview/?knowlage_name=${encodeURIComponent(kbName)}&filename=${encodeURIComponent(fileName)}`
+      );
+      const data = await response.json();
+      
+      if (data.code === 200) {
+        setUploadedPreviewData(data.data);
+      } else {
+        alert(`预览失败: ${data.error || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error('预览文件失败:', error);
+      alert('预览失败: ' + error.message);
+    }
+  };
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
@@ -72,6 +143,15 @@ const KnowledgeBase = () => {
         alert('上传成功');
         setFile(null);
         setKnowledgeBaseName('');
+        setPreviewUrl(null);
+        setPreviewContent('');
+        setShowPreview(false);
+        // 刷新知识库列表
+        await loadKnowledgeBases();
+        // 如果已选中该知识库，刷新文件列表
+        if (selectedKB === data.data?.knowledge_base) {
+          await loadKnowledgeBaseFiles(selectedKB);
+        }
       } else {
         alert(`上传失败: ${data.error || '未知错误'}`);
       }
@@ -225,6 +305,91 @@ const KnowledgeBase = () => {
         </div>
       )}
 
+      {/* Knowledge Bases List Section */}
+      <section className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 className="text-2xl font-bold mb-2 flex items-center text-slate-800 dark:text-white">
+          <div className="p-2 bg-green-100 dark:bg-green-900/40 rounded-xl mr-3 text-green-600">
+            <FolderOpen size={24} />
+          </div>
+          已上传的知识库
+        </h3>
+        <p className="text-slate-500 mb-8 font-medium">管理您创建的知识库和文档</p>
+        
+        {loadingKBList ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="animate-spin text-green-500 mr-3" size={24} />
+            <span className="text-slate-500">加载知识库列表...</span>
+          </div>
+        ) : knowledgeBases.length === 0 ? (
+          <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/30 rounded-2xl">
+            <FolderOpen size={48} className="mx-auto mb-4 text-slate-300" />
+            <p className="text-slate-500 font-medium">还没有上传任何知识库</p>
+            <p className="text-slate-400 text-sm mt-2">上传文档后，您的知识库将显示在这里</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {knowledgeBases.map((kb) => (
+              <div 
+                key={kb.name}
+                onClick={() => handleSelectKB(kb.name)}
+                className={`p-6 rounded-2xl cursor-pointer transition-all border-2 ${
+                  selectedKB === kb.name
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-green-400 dark:hover:border-green-500'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-slate-800 dark:text-white text-lg truncate">{kb.name}</h4>
+                    <p className="text-sm text-slate-500 mt-2">
+                      <File size={14} className="inline mr-1" />
+                      {kb.file_count} 个文件
+                    </p>
+                  </div>
+                  {selectedKB === kb.name && (
+                    <CheckCircle2 size={24} className="text-green-500 ml-2 flex-shrink-0" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* KB Files List */}
+        {selectedKB && kbFiles.length > 0 && (
+          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
+            <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-4">
+              "{selectedKB}" 中的文件
+            </h4>
+            <div className="space-y-2">
+              {kbFiles.map((file) => (
+                <div 
+                  key={file.name}
+                  className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                >
+                  <div className="flex items-center flex-1 min-w-0">
+                    <File size={18} className="text-slate-400 mr-3 flex-shrink-0" />
+                    <span className="flex-1 text-slate-700 dark:text-slate-300 truncate">{file.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                    <span className="text-xs text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">
+                      {file.type}
+                    </span>
+                    <button
+                      onClick={() => previewUploadedFile(selectedKB, file.name)}
+                      className="p-1.5 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      title="预览文件"
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* Query Section */}
       <section className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
         <h3 className="text-2xl font-bold mb-2 flex items-center text-slate-800 dark:text-white">
@@ -294,6 +459,53 @@ const KnowledgeBase = () => {
           </div>
         )}
       </section>
+
+      {/* Uploaded File Preview Modal */}
+      {showUploadedPreview && uploadedPreviewData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="flex items-center space-x-3">
+                <File className="text-indigo-600" size={24} />
+                <div>
+                  <h4 className="font-bold text-slate-800 dark:text-white truncate max-w-md">{uploadedPreviewData.filename}</h4>
+                  <p className="text-xs text-slate-500 mt-1">类型: {uploadedPreviewData.filetype.toUpperCase()}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowUploadedPreview(false);
+                  setUploadedPreviewData(null);
+                }}
+                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-8">
+              {uploadedPreviewData.preview_type === 'text' ? (
+                <pre className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto">
+                  {uploadedPreviewData.content}
+                </pre>
+              ) : uploadedPreviewData.preview_type === 'html' ? (
+                <div 
+                  className="p-8 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 prose dark:prose-invert max-w-none overflow-auto"
+                  dangerouslySetInnerHTML={{ __html: uploadedPreviewData.content }}
+                />
+              ) : uploadedPreviewData.preview_type === 'pdf_text' ? (
+                <pre className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto">
+                  {uploadedPreviewData.content}
+                </pre>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                  <AlertCircle size={48} className="mb-4 opacity-20" />
+                  <p className="font-medium">{uploadedPreviewData.content}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
