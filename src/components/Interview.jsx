@@ -120,79 +120,115 @@ const Interview = ({ prefillKeywords }) => {
         return;
       }
       
-      // Upload resume and directly handle the streaming response
+      // Upload resume with retry logic
       const uploadFormData = new FormData();
       uploadFormData.append('file', resumeFile);
       
-      try {
-        const response = await fetch(`${API_BASE_URL}/interview/resume/upload_resume/`, {
-          method: 'POST',
-          body: uploadFormData
-        });
-        if (!response.ok) throw new Error('简历上传失败');
+      const maxRetries = 3;
+      let lastError = null;
+      
+      for (let retryCount = 0; retryCount < maxRetries; retryCount++) {
+        try {
+          console.log(`尝试上传简历，重试次数: ${retryCount}`);
+          
+          const response = await fetch(`${API_BASE_URL}/interview/resume/upload_resume/`, {
+            method: 'POST',
+            body: uploadFormData,
+            headers: {
+              // 让浏览器自动设置 multipart/form-data
+            },
+            signal: AbortSignal.timeout(60000) // 60秒超时
+          });
+          
+          if (!response.ok) {
+            throw new Error(`服务器错误: ${response.status} ${response.statusText}`);
+          }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let jsonAnalysis = null;
-        let lastJsonObject = null;
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let jsonAnalysis = null;
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
-          
-          // 处理 SSE 格式: data: {json}\n\n
-          const lines = buffer.split('\n\n');
-          buffer = lines[lines.length - 1]; // 保留未完成的行
-          
-          // 处理完成的行
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i].trim();
-            if (line.startsWith('data: ')) {
-              try {
-                const jsonStr = line.slice(6); // 移除 'data: ' 前缀
-                const data = JSON.parse(jsonStr);
-                
-                // 保存所有 JSON 对象用于检查
-                lastJsonObject = data;
-                
-                // 检查是否是简历分析的JSON（包含basic_info）
-                if (data.basic_info && (data.technical_skills !== undefined || data.project_experience !== undefined)) {
-                  // 这是简历分析结果
-                  jsonAnalysis = data;
-                  console.log('检测到简历分析结果:', jsonAnalysis);
-                } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
-                  // 这是流式文本内容
-                  setContent(prev => prev + data.choices[0].delta.content);
+          while (true) {
+            try {
+              const { done, value } = await reader.read();
+              if (done) break;
+              
+              const chunk = decoder.decode(value, { stream: true });
+              buffer += chunk;
+              
+              // 处理 SSE 格式: data: {json}\n\n
+              const lines = buffer.split('\n\n');
+              buffer = lines[lines.length - 1]; // 保留未完成的行
+              
+              // 处理完成的行
+              for (let i = 0; i < lines.length - 1; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('data: ')) {
+                  try {
+                    const jsonStr = line.slice(6); // 移除 'data: ' 前缀
+                    const data = JSON.parse(jsonStr);
+                    
+                    // 检查是否是错误响应
+                    if (data.error) {
+                      console.error('服务器错误:', data.error);
+                      lastError = new Error(data.error);
+                      break;
+                    }
+                    
+                    // 检查是否是简历分析的JSON（包含basic_info）
+                    if (data.basic_info && (data.technical_skills !== undefined || data.project_experience !== undefined)) {
+                      // 这是简历分析结果
+                      jsonAnalysis = data;
+                      console.log('检测到简历分析结果:', jsonAnalysis);
+                    } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                      // 这是流式文本内容
+                      setContent(prev => prev + data.choices[0].delta.content);
+                    }
+                  } catch (parseErr) {
+                    // 解析错误时跳过，但记录日志
+                    console.debug('JSON解析失败:', parseErr.message, line.slice(0, 100));
+                  }
                 }
-              } catch (e) {
-                // 解析错误时跳过
               }
+            } catch (readErr) {
+              console.error('流读取失败:', readErr);
+              lastError = readErr;
+              break;
             }
           }
+          
+          // 如果成功处理了数据，设置结果并退出重试循环
+          if (jsonAnalysis) {
+            setResumeAnalysis(jsonAnalysis);
+            console.log('简历分析已设置');
+            setLoading(false);
+            return;
+          }
+          
+          // 如果没有获取到分析结果，抛出错误以触发重试
+          if (lastError) {
+            throw lastError;
+          }
+          throw new Error('未能获取简历分析结果');
+          
+        } catch (error) {
+          lastError = error;
+          console.error(`上传尝试 ${retryCount + 1} 失败:`, error);
+          
+          if (retryCount < maxRetries - 1) {
+            // 计算延迟（指数退避）
+            const delay = Math.pow(2, retryCount) * 1000;
+            console.log(`等待 ${delay}ms 后重试...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
         }
-        
-        // 设置解析结果
-        if (jsonAnalysis) {
-          setResumeAnalysis(jsonAnalysis);
-          console.log('简历分析已设置');
-        } else if (lastJsonObject && lastJsonObject.basic_info) {
-          // 如果没有明确标记，但最后一个JSON对象包含basic_info，也使用它
-          setResumeAnalysis(lastJsonObject);
-          console.log('使用最后的JSON对象作为简历分析');
-        }
-        
-        setLoading(false);
-        return; // 解析完成后返回，不继续发送请求
-      } catch (error) {
-        console.error('Resume Error:', error);
-        setContent('简历处理失败，请重试。');
-        setLoading(false);
-        return;
       }
+      
+      // 所有重试都失败了
+      setContent('简历处理失败，请检查网络连接并重试。错误: ' + (lastError?.message || '未知错误'));
+      setLoading(false);
+      return;
     }
 
     try {
