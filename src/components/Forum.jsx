@@ -98,10 +98,21 @@ const Forum = () => {
       const data = await response.json();
       
       if (data.code === 200) {
+        console.log('[CreatePost] 发布成功，帖子ID:', data.data.post_id);
         alert('发布成功');
         setNewPost({ title: '', content: '', category: '' });
         setShowCreatePost(false);
-        loadPosts();
+        
+        // 立即加载新发布的帖子详情（包含完整Markdown内容）
+        const newPostId = data.data.post_id;
+        if (newPostId) {
+          loadPostDetail(newPostId);
+          // 同时在后台刷新列表
+          loadPosts();
+        } else {
+          // 如果API没返回ID，则刷新列表
+          loadPosts();
+        }
       } else {
         alert(`发布失败: ${data.error || '未知错误'}`);
       }
