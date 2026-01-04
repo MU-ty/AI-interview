@@ -750,7 +750,6 @@ const Interview = ({ prefillKeywords, username }) => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: username || 'guest',
           question: content.split('\n')[0] || "面试题",
           user_answer: userAnswer,
           ai_feedback: evaluation,
