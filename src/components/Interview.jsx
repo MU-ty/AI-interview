@@ -116,6 +116,56 @@ const Interview = ({ prefillKeywords, username }) => {
     }
   };
 
+  // 同步简历分析到个人档案
+  const syncResumeToProfile = async () => {
+    if (!resumeAnalysis) {
+      alert('暂无分析数据可同步');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const syncData = {
+        education: resumeAnalysis.basic_info?.education,
+        major: resumeAnalysis.basic_info?.major,
+        work_years: resumeAnalysis.basic_info?.work_years || 0,
+        technical_skills: resumeAnalysis.technical_skills || [],
+        project_experience: resumeAnalysis.project_experience,
+        technical_score: resumeAnalysis.match_score?.technical || 0,
+        experience_score: resumeAnalysis.match_score?.experience || 0,
+        improvement_suggestions: resumeAnalysis.improvement_suggestions || []
+      };
+
+      console.log('📤 开始同步简历分析到个人档案...', syncData);
+
+      const response = await fetch(`${API_BASE_URL}/api/user/profile/sync-resume`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(syncData)
+      });
+
+      const result = await response.json();
+      if (result.code === 200) {
+        console.log('✅ 简历分析已成功同步到个人档案');
+        alert('✅ 简历分析已成功同步到个人档案！\n\n您可以在个人档案页面查看完整的信息。');
+        // 可选：自动跳转到个人档案页面
+        // window.location.href = '/profile';
+      } else {
+        console.error('❌ 同步失败:', result.message);
+        alert(`❌ 同步失败: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('❌ 同步错误:', error);
+      alert(`❌ 同步出错: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const startInterview = async () => {
     setLoading(true);
     setContent('');
@@ -960,17 +1010,107 @@ const Interview = ({ prefillKeywords, username }) => {
 
               {/* 同步简历分析标签 */}
               {resumeTab === 'sync' && (
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 text-center">
-                  <div className="max-w-md mx-auto space-y-4">
-                    <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle className="text-blue-600" size={40} />
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800">
+                  {resumeAnalysis ? (
+                    <div className="max-w-2xl mx-auto space-y-6">
+                      <div className="text-center">
+                        <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">同步简历分析到个人档案</h3>
+                        <p className="text-slate-500 dark:text-slate-400">将分析结果保存到您的个人档案中，便于后续查看和管理</p>
+                      </div>
+
+                      {/* 预览要同步的数据 */}
+                      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-6 space-y-4">
+                        <h4 className="font-bold text-slate-700 dark:text-slate-300">待同步信息</h4>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          {resumeAnalysis.basic_info?.education && (
+                            <div>
+                              <span className="text-slate-500">学历</span>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.education}</p>
+                            </div>
+                          )}
+                          {resumeAnalysis.basic_info?.major && (
+                            <div>
+                              <span className="text-slate-500">专业</span>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.major}</p>
+                            </div>
+                          )}
+                          {resumeAnalysis.basic_info?.work_years > 0 && (
+                            <div>
+                              <span className="text-slate-500">工作年限</span>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.work_years} 年</p>
+                            </div>
+                          )}
+                          {resumeAnalysis.match_score?.technical && (
+                            <div>
+                              <span className="text-slate-500">技术评分</span>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.match_score.technical}</p>
+                            </div>
+                          )}
+                          {resumeAnalysis.match_score?.experience && (
+                            <div>
+                              <span className="text-slate-500">经验评分</span>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.match_score.experience}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {resumeAnalysis.technical_skills && resumeAnalysis.technical_skills.length > 0 && (
+                          <div>
+                            <span className="text-slate-500 text-sm">技术技能</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {resumeAnalysis.technical_skills.map((skill, idx) => (
+                                <span key={idx} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 同步按钮 */}
+                      <div className="flex gap-4 justify-center">
+                        <button
+                          onClick={() => setResumeTab('analysis')}
+                          className="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold rounded-lg transition-all"
+                        >
+                          返回分析
+                        </button>
+                        <button
+                          onClick={() => syncResumeToProfile()}
+                          disabled={loading}
+                          className="flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-lg transition-all"
+                        >
+                          {loading ? (
+                            <>
+                              <Loader2 size={18} className="animate-spin" />
+                              同步中...
+                            </>
+                          ) : (
+                            <>
+                              <Save size={18} />
+                              立即同步
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white">同步简历分析</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">将您的简历分析结果同步到个人档案</p>
-                    <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all">
-                      立即同步
-                    </button>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                        <AlertCircle className="text-slate-600" size={40} />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">暂无数据可同步</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">请先完成简历分析</p>
+                      <button
+                        onClick={() => setResumeTab('analysis')}
+                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all"
+                      >
+                        前往分析
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
