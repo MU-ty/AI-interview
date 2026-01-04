@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -44,7 +46,8 @@ const Forum = () => {
       
       if (data.code === 200) {
         setPosts(data.data.posts || []);
-        setTotalPages(data.data.total_pages || 1);
+        const total = data.data.total || 0;
+        setTotalPages(Math.ceil(total / 10) || 1);
       }
     } catch (error) {
       console.error('加载帖子失败:', error);
@@ -114,7 +117,7 @@ const Forum = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/replies/`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/replies`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +143,7 @@ const Forum = () => {
   const likePost = async (postId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/like/`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/like`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -167,7 +170,7 @@ const Forum = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -196,7 +199,7 @@ const Forum = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/forum/replies/${replyId}/`, {
+      const response = await fetch(`${API_BASE_URL}/forum/replies/${replyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -223,6 +226,18 @@ const Forum = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <style>{`
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 { margin-top: 1em; margin-bottom: 0.5em; }
+        .markdown-content p { margin-bottom: 1em; line-height: 1.6; }
+        .markdown-content ul, .markdown-content ol { margin-bottom: 1em; padding-left: 2em; }
+        .markdown-content code { background-color: #eee; padding: 2px 4px; borderRadius: 4px; font-family: monospace; }
+        .markdown-content pre { background-color: #2d2d2d; color: #ccc; padding: 15px; borderRadius: 4px; overflow-x: auto; margin-bottom: 1em; }
+        .markdown-content pre code { background-color: transparent; padding: 0; color: inherit; }
+        .markdown-content blockquote { border-left: 4px solid #ddd; padding-left: 1em; color: #666; margin-bottom: 1em; }
+        .markdown-content table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+        .markdown-content th, .markdown-content td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .markdown-content th { background-color: #f2f2f2; }
+      `}</style>
       <h1 style={{ marginBottom: '20px' }}>💬 讨论论坛</h1>
       
       {/* 顶部操作栏 */}
@@ -416,18 +431,20 @@ const Forum = () => {
               
               <div style={{ color: '#666', fontSize: '14px', marginTop: '10px' }}>
                 {currentPost.category && <span style={{ marginRight: '10px' }}>分类: {currentPost.category}</span>}
-                <span style={{ marginRight: '10px' }}>作者: {currentPost.author_name}</span>
+                <span style={{ marginRight: '10px' }}>作者: {currentPost.author?.username || '未知'}</span>
                 <span>{formatDate(currentPost.created_at)}</span>
               </div>
               
-              <div style={{ 
+              <div className="markdown-content" style={{ 
                 marginTop: '15px', 
                 padding: '15px', 
                 backgroundColor: '#f5f5f5',
                 borderRadius: '4px',
-                whiteSpace: 'pre-wrap'
+                overflowX: 'auto'
               }}>
-                {currentPost.content}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {currentPost.content}
+                </ReactMarkdown>
               </div>
               
               <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -442,7 +459,7 @@ const Forum = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  👍 点赞 ({currentPost.likes})
+                  👍 点赞 ({currentPost.like_count || 0})
                 </button>
                 
                 {currentPost.can_delete && (
@@ -475,7 +492,7 @@ const Forum = () => {
                   borderRadius: '4px'
                 }}>
                   <div style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: 'bold', marginRight: '10px' }}>{reply.author_name}</span>
+                    <span style={{ fontWeight: 'bold', marginRight: '10px' }}>{reply.author?.username || '未知'}</span>
                     <span>{formatDate(reply.created_at)}</span>
                     {reply.can_delete && (
                       <button
@@ -495,7 +512,11 @@ const Forum = () => {
                       </button>
                     )}
                   </div>
-                  <div style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</div>
+                  <div className="markdown-content" style={{ overflowX: 'auto' }}>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {reply.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ))}
               
@@ -571,7 +592,7 @@ const Forum = () => {
                       marginRight: '10px',
                       fontSize: '12px'
                     }}>{post.category}</span>}
-                    <span style={{ marginRight: '10px' }}>作者: {post.author_name}</span>
+                    <span style={{ marginRight: '10px' }}>作者: {post.author?.username || '未知'}</span>
                     <span>{formatDate(post.created_at)}</span>
                   </div>
                   <div style={{ 
@@ -581,8 +602,8 @@ const Forum = () => {
                     display: 'flex',
                     gap: '15px'
                   }}>
-                    <span>👍 {post.likes}</span>
-                    <span>💬 {post.reply_count}</span>
+                    <span>👍 {post.like_count || 0}</span>
+                    <span>💬 {post.reply_count || 0}</span>
                   </div>
                 </div>
               </div>
