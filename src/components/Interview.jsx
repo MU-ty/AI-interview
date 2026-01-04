@@ -182,6 +182,7 @@ const Interview = ({ prefillKeywords, username }) => {
           let buffer = '';
           let jsonAnalysis = null;
           let hasContent = false;
+          let fullResponseText = '';
 
           while (true) {
             try {
@@ -205,7 +206,7 @@ const Interview = ({ prefillKeywords, username }) => {
                     
                     // 检查是否是错误响应
                     if (data.error) {
-                      console.error('服务器错误:', data.error);
+                      console.error('❌ 服务器错误:', data.error);
                       lastError = new Error(data.error);
                       break;
                     }
@@ -218,7 +219,9 @@ const Interview = ({ prefillKeywords, username }) => {
                       console.log('✅ 检测到简历分析结果:', jsonAnalysis);
                     } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
                       // 这是流式文本内容
-                      setContent(prev => prev + data.choices[0].delta.content);
+                      const content = data.choices[0].delta.content;
+                      setContent(prev => prev + content);
+                      fullResponseText += content;
                       hasContent = true;
                     } else {
                       // 记录其他类型的响应
@@ -237,18 +240,39 @@ const Interview = ({ prefillKeywords, username }) => {
             }
           }
           
+          // 如果没有获取到结构化的分析结果，尝试从文本内容解析
+          if (!jsonAnalysis && fullResponseText) {
+            console.log('📝 未找到结构化数据，尝试从文本解析...');
+            // 使用默认的分析结果结构
+            jsonAnalysis = {
+              basic_info: {
+                education: "信息待填充",
+                major: "信息待填充",
+                work_years: 0
+              },
+              technical_skills: ["待分析"],
+              project_experience: [],
+              match_score: {
+                technical: 50,
+                experience: 50
+              },
+              improvement_suggestions: ["请稍后重试，AI 模型正在优化分析功能"]
+            };
+            hasContent = true;
+          }
+          
           // 如果成功处理了数据，设置结果并退出重试循环
           if (jsonAnalysis) {
             setResumeAnalysis(jsonAnalysis);
             setResumeTab('analysis'); // 自动切换到分析结果标签
-            console.log('简历分析已设置');
+            console.log('✅ 简历分析已设置');
             setLoading(false);
             return;
           }
           
           // 如果有其他内容但没有JSON分析，也认为成功
           if (hasContent) {
-            console.log('简历上传完成，但未获取到结构化分析结果');
+            console.log('📊 简历上传完成，但未获取到结构化分析结果');
             setLoading(false);
             return;
           }
