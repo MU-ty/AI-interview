@@ -543,23 +543,38 @@ const Forum = () => {
                   padding: '15px', 
                   backgroundColor: '#f5f5f5',
                   borderRadius: '4px',
-                  overflowX: 'auto'
+                  overflowX: 'auto',
+                  lineHeight: '1.6'
                 }}>
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      h1: ({node, ...props}) => <h1 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                      h2: ({node, ...props}) => <h2 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                      h3: ({node, ...props}) => <h3 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                      p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                      h1: ({node, ...props}) => <h1 style={{fontSize: '2em', fontWeight: 'bold', marginTop: '0.67em', marginBottom: '0.67em', borderBottom: '1px solid #ddd', paddingBottom: '0.3em'}} {...props} />,
+                      h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', fontWeight: 'bold', marginTop: '0.83em', marginBottom: '0.83em', borderBottom: '1px solid #eee', paddingBottom: '0.3em'}} {...props} />,
+                      h3: ({node, ...props}) => <h3 style={{fontSize: '1.17em', fontWeight: 'bold', marginTop: '1em', marginBottom: '1em'}} {...props} />,
+                      h4: ({node, ...props}) => <h4 style={{fontSize: '1em', fontWeight: 'bold', marginTop: '1.33em', marginBottom: '1.33em'}} {...props} />,
+                      p: ({node, ...props}) => <p style={{marginTop: '0', marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                      ul: ({node, ...props}) => <ul style={{marginBottom: '1em', paddingLeft: '2em', listStyleType: 'disc'}} {...props} />,
+                      ol: ({node, ...props}) => <ol style={{marginBottom: '1em', paddingLeft: '2em', listStyleType: 'decimal'}} {...props} />,
+                      li: ({node, ...props}) => <li style={{marginBottom: '0.25em'}} {...props} />,
+                      strong: ({node, ...props}) => <strong style={{fontWeight: 'bold'}} {...props} />,
+                      em: ({node, ...props}) => <em style={{fontStyle: 'italic'}} {...props} />,
                       code: ({node, inline, ...props}) => {
                         if (inline) {
-                          return <code style={{backgroundColor: '#eee', padding: '2px 4px', borderRadius: '4px', fontFamily: 'monospace'}} {...props} />
+                          return <code style={{backgroundColor: '#f0f0f0', padding: '2px 6px', borderRadius: '3px', fontFamily: 'Consolas, Monaco, monospace', fontSize: '0.9em', color: '#e83e8c'}} {...props} />
                         }
-                        return <code {...props} />
+                        return <code style={{fontFamily: 'Consolas, Monaco, monospace', fontSize: '0.9em'}} {...props} />
                       },
-                      pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#ccc', padding: '15px', borderRadius: '4px', overflowX: 'auto', marginBottom: '1em'}} {...props} />,
-                      blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666', marginBottom: '1em'}} {...props} />
+                      pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#f8f8f2', padding: '16px', borderRadius: '6px', overflowX: 'auto', marginBottom: '1em', fontSize: '0.9em'}} {...props} />,
+                      blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #dfe2e5', paddingLeft: '1em', color: '#6a737d', margin: '0 0 1em 0', fontStyle: 'italic'}} {...props} />,
+                      a: ({node, ...props}) => <a style={{color: '#0366d6', textDecoration: 'none'}} {...props} />,
+                      hr: ({node, ...props}) => <hr style={{border: 'none', borderTop: '1px solid #ddd', margin: '1.5em 0'}} {...props} />,
+                      table: ({node, ...props}) => <table style={{borderCollapse: 'collapse', width: '100%', marginBottom: '1em'}} {...props} />,
+                      thead: ({node, ...props}) => <thead style={{backgroundColor: '#f6f8fa'}} {...props} />,
+                      tbody: ({node, ...props}) => <tbody {...props} />,
+                      tr: ({node, ...props}) => <tr style={{borderTop: '1px solid #ddd'}} {...props} />,
+                      th: ({node, ...props}) => <th style={{padding: '8px 13px', border: '1px solid #ddd', fontWeight: 'bold', textAlign: 'left'}} {...props} />,
+                      td: ({node, ...props}) => <td style={{padding: '8px 13px', border: '1px solid #ddd'}} {...props} />
                     }}
                   >
                     {currentPost.content}
@@ -650,22 +665,26 @@ const Forum = () => {
                       </button>
                     )}
                   </div>
-                  <div style={{ overflowX: 'auto' }}>
+                  <div style={{ overflowX: 'auto', lineHeight: '1.6' }}>
                     <ReactMarkdown 
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        h1: ({node, ...props}) => <h1 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                        h2: ({node, ...props}) => <h2 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                        h3: ({node, ...props}) => <h3 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
-                        p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                        h1: ({node, ...props}) => <h1 style={{fontSize: '1.5em', fontWeight: 'bold', marginTop: '0.67em', marginBottom: '0.67em'}} {...props} />,
+                        h2: ({node, ...props}) => <h2 style={{fontSize: '1.3em', fontWeight: 'bold', marginTop: '0.83em', marginBottom: '0.83em'}} {...props} />,
+                        h3: ({node, ...props}) => <h3 style={{fontSize: '1.17em', fontWeight: 'bold', marginTop: '1em', marginBottom: '1em'}} {...props} />,
+                        p: ({node, ...props}) => <p style={{marginTop: '0', marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                        ul: ({node, ...props}) => <ul style={{marginBottom: '1em', paddingLeft: '2em', listStyleType: 'disc'}} {...props} />,
+                        ol: ({node, ...props}) => <ol style={{marginBottom: '1em', paddingLeft: '2em'}} {...props} />,
+                        strong: ({node, ...props}) => <strong style={{fontWeight: 'bold'}} {...props} />,
+                        em: ({node, ...props}) => <em style={{fontStyle: 'italic'}} {...props} />,
                         code: ({node, inline, ...props}) => {
                           if (inline) {
-                            return <code style={{backgroundColor: '#eee', padding: '2px 4px', borderRadius: '4px', fontFamily: 'monospace'}} {...props} />
+                            return <code style={{backgroundColor: '#f0f0f0', padding: '2px 6px', borderRadius: '3px', fontFamily: 'Consolas, Monaco, monospace', fontSize: '0.9em', color: '#e83e8c'}} {...props} />
                           }
-                          return <code {...props} />
+                          return <code style={{fontFamily: 'Consolas, Monaco, monospace'}} {...props} />
                         },
-                        pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#ccc', padding: '15px', borderRadius: '4px', overflowX: 'auto', marginBottom: '1em'}} {...props} />,
-                        blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666', marginBottom: '1em'}} {...props} />
+                        pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#f8f8f2', padding: '16px', borderRadius: '6px', overflowX: 'auto', marginBottom: '1em'}} {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #dfe2e5', paddingLeft: '1em', color: '#6a737d', margin: '0 0 1em 0'}} {...props} />
                       }}
                     >
                       {reply.content}
