@@ -34,6 +34,11 @@ const Interview = ({ prefillKeywords, username }) => {
   // 简历模式标签页状态
   const [resumeTab, setResumeTab] = useState('upload'); // upload, analysis, sync
   
+  // 总结报告状态
+  const [showSummary, setShowSummary] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
+
   const [formData, setFormData] = useState({
     company_name: '阿里巴巴',
     position: 'Java后端开发',
@@ -68,6 +73,40 @@ const Interview = ({ prefillKeywords, username }) => {
       console.error('加载知识库列表失败:', error);
     } finally {
       setLoadingKBList(false);
+    }
+  };
+
+  const handleEndInterview = async () => {
+    if (chatHistory.length === 0) return;
+    
+    if (!window.confirm('确定要结束面试并生成总结报告吗？')) return;
+
+    setGeneratingSummary(true);
+    try {
+      const token = localStorage.getItem('token');
+      const endpointPrefix = mode === 'company' ? 'company' : 'self';
+      const response = await fetch(`${API_BASE_URL}/interview/${endpointPrefix}/generate_interview_summary/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          history: chatHistory,
+          user_id: username || 'guest'
+        })
+      });
+      
+      if (!response.ok) throw new Error('生成总结失败');
+      
+      const data = await response.json();
+      setSummaryData(data);
+      setShowSummary(true);
+    } catch (error) {
+      console.error(error);
+      alert('生成总结报告失败，请重试');
+    } finally {
+      setGeneratingSummary(false);
     }
   };
 
@@ -1400,6 +1439,14 @@ const Interview = ({ prefillKeywords, username }) => {
                     <p className="text-xs text-slate-500 font-medium">实时对话中</p>
                   </div>
                 </div>
+                <button
+                  onClick={handleEndInterview}
+                  disabled={generatingSummary || chatHistory.length === 0}
+                  className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {generatingSummary ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
+                  <span>{generatingSummary ? '生成报告中...' : '结束面试'}</span>
+                </button>
               </div>
               
               {/* Chat Messages */}
@@ -1600,6 +1647,74 @@ const Interview = ({ prefillKeywords, username }) => {
                   <p className="text-xs mt-2">PDF 和 Word (.docx) 文件支持直接预览</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Summary Modal */}
+      {showSummary && summaryData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
+                  <FileUser size={20} />
+                </div>
+                <h4 className="font-bold text-slate-800 dark:text-white">面试总结报告</h4>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={() => window.print()}
+                  className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500"
+                  title="打印/导出PDF"
+                >
+                  <Save size={20} />
+                </button>
+                <button 
+                  onClick={() => setShowSummary(false)}
+                  className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-8 print:p-0">
+              <div className="mb-8 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-5xl font-bold text-indigo-600 mb-2">{summaryData.score}</div>
+                  <div className="text-sm text-slate-500 font-medium">综合评分</div>
+                </div>
+              </div>
+              
+              <div className="space-y-8">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                    <Sparkles size={20} className="mr-2 text-indigo-500" />
+                    面试总结
+                  </h3>
+                  <div className="prose dark:prose-invert max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaryData.summary}</ReactMarkdown>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                    <AlertCircle size={20} className="mr-2 text-red-500" />
+                    薄弱点分析
+                  </h3>
+                  <div className="prose dark:prose-invert max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaryData.weaknesses}</ReactMarkdown>
+                  </div>
+                </div>
+
+                {summaryData.saved_wrong_answers > 0 && (
+                  <div className="bg-green-50 dark:bg-green-900/10 rounded-xl p-4 flex items-center text-green-700 dark:text-green-400">
+                    <CheckCircle size={20} className="mr-2" />
+                    <span>已自动将 {summaryData.saved_wrong_answers} 道错题存入薄弱点强化模块</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
