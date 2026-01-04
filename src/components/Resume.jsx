@@ -147,34 +147,49 @@ const ResumeModule = ({ username }) => {
             const line = lines[i].trim();
             if (line.startsWith('data: ')) {
               const jsonStr = line.slice(6).trim();
-              console.log('解析 JSON:', jsonStr.substring(0, 100));
+              
+              // 跳过空数据
+              if (!jsonStr) continue;
               
               try {
                 const data = JSON.parse(jsonStr);
-                console.log('解析结果:', data);
                 
                 // 兼容多种返回格式：直接的对象或包含 analysis 字段的对象
                 if (data.analysis) {
                   jsonAnalysis = data.analysis;
-                  console.log('找到分析结果 (data.analysis):', jsonAnalysis);
+                  console.log('✅ 找到分析结果 (data.analysis)');
                 } else if (data.basic_info || data.technical_skills || data.match_score) {
                   jsonAnalysis = data;
-                  console.log('找到分析结果 (direct object):', jsonAnalysis);
+                  console.log('✅ 找到分析结果 (direct object)');
+                } else if (data.choices && data.choices[0]?.delta?.content) {
+                  // 这是流式内容块，暂时跳过
+                  continue;
+                } else if (data.choices && data.choices[0]?.finish_reason === 'stop') {
+                  // 流结束标记
+                  console.log('📝 流结束标记');
+                  continue;
+                } else if (data.error) {
+                  // 错误响应
+                  throw new Error(data.error);
                 }
               } catch (e) {
-                console.warn('JSON 解析失败:', e.message, jsonStr.substring(0, 50));
+                // 只有在JSON解析失败时才警告，不影响流程
+                if (e.message !== 'Unexpected end of JSON input') {
+                  console.warn('JSON 解析失败:', e.message, jsonStr.substring(0, 50));
+                }
               }
             }
           }
         }
 
+        console.log('流读取完成，检查分析结果...');
         if (jsonAnalysis) {
           setResumeAnalysis(jsonAnalysis);
-          setActiveTab('analysis');
           setSyncStatus('✅ 简历分析完成');
-          console.log('分析完成');
+          console.log('✅ 简历分析成功:', jsonAnalysis);
         } else {
-          throw new Error('无法从流中解析简历分析结果');
+          console.error('⚠️ 未能从流中提取到简历分析结果');
+          throw new Error('无法从流中解析简历分析结果，请检查简历格式或重试');
         }
       } else {
         // 普通 JSON 响应处理
