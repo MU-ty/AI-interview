@@ -108,15 +108,36 @@ const UserProfile = ({ username }) => {
       formData.append('file', file);
 
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('请先登录');
+        setUploadingAvatar(false);
+        return;
+      }
+
+      console.log('开始上传头像，API URL:', `${API_BASE_URL}/api/user/profile/upload-avatar`);
+      
       const response = await fetch(`${API_BASE_URL}/api/user/profile/upload-avatar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
+          // 不要设置 Content-Type，让浏览器自动设置 multipart/form-data
         },
         body: formData
       });
 
+      console.log('上传响应状态:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('上传失败的响应:', errorText);
+        alert(`❌ 上传失败: ${response.status} ${response.statusText}`);
+        return;
+      }
+
       const data = await response.json();
+      console.log('上传结果:', data);
+      
       if (data.code === 200) {
         // 更新本地档案数据
         setProfile(prev => ({
@@ -126,10 +147,12 @@ const UserProfile = ({ username }) => {
         alert('✅ 头像上传成功');
         // 刷新头像以显示更新
         setTimeout(fetchProfile, 500);
+      } else {
+        alert(`❌ 上传失败: ${data.message || '未知错误'}`);
       }
     } catch (error) {
       console.error('上传头像失败:', error);
-      alert('❌ 上传头像失败');
+      alert(`❌ 上传头像失败: ${error.message}`);
     } finally {
       setUploadingAvatar(false);
       if (fileInputRef.current) {
