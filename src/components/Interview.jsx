@@ -170,6 +170,8 @@ const Interview = ({ prefillKeywords, username }) => {
     setLoading(true);
     setContent('');
     setEvaluation('');
+    setUserAnswer('');
+    setResumeAnalysis(null);
     setIsSaved(false);
     
     let url = '';
@@ -565,8 +567,19 @@ const Interview = ({ prefillKeywords, username }) => {
         ].map((m) => (
           <button
             key={m.id}
-            onClick={() => setMode(m.id)}
+            onClick={() => {
+              // 如果正在进行面试，禁止切换模式
+              if (loading || content || evaluation) {
+                return;
+              }
+              setMode(m.id);
+            }}
+            disabled={loading || content || evaluation}
             className={`p-6 rounded-3xl border-2 transition-all duration-300 flex flex-col items-start text-left group relative overflow-hidden ${
+              loading || content || evaluation
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
+            } ${
               mode === m.id 
                 ? 'border-indigo-500 bg-white dark:bg-slate-900 shadow-xl shadow-indigo-100 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-900/20' 
                 : 'border-transparent bg-white dark:bg-slate-900 hover:border-indigo-200 dark:hover:border-indigo-800 shadow-sm'
@@ -1173,9 +1186,29 @@ const Interview = ({ prefillKeywords, username }) => {
 
       {/* Output Area - 只在非 resume 模式或 resumeTab 不是 upload/analysis 时显示 */}
       {mode !== 'resume' && (content || loading) && (
-        <div className={`grid gap-8 animate-in slide-in-from-bottom-8 duration-500 ${
-          resumeAnalysis && content ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 lg:grid-cols-2'
-        }`}>
+        <>
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+              {mode === 'company' ? '公司面试' : mode === 'self' ? '自选知识点面试' : '简历定制面试'}
+            </h2>
+            <button 
+              onClick={() => {
+                setContent('');
+                setEvaluation('');
+                setUserAnswer('');
+                setResumeAnalysis(null);
+                setIsSaved(false);
+              }}
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-xl transition-all font-medium text-sm"
+            >
+              <X size={16} />
+              <span>新面试</span>
+            </button>
+          </div>
+          
+          <div className={`grid gap-8 animate-in slide-in-from-bottom-8 duration-500 ${
+            resumeAnalysis && content ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 lg:grid-cols-2'
+          }`}>
           {/* Resume Analysis Area */}
           {resumeAnalysis && (
             <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-[2rem] border border-indigo-200 dark:border-indigo-800/50 shadow-xl overflow-hidden flex flex-col">
@@ -1431,6 +1464,7 @@ const Interview = ({ prefillKeywords, username }) => {
             </div>
           )}
         </div>
+        </>
       )}
 
       {/* Preview Modal */}
