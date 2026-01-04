@@ -514,32 +514,47 @@ const Interview = ({ prefillKeywords, username }) => {
                 />
               </div>
               
-              <div className="col-span-2">
-                <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 space-y-6">
-                  {/* 题目数量选择 */}
-                  <div className="space-y-3">
-                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                      生成题目数量 <span className="text-red-500 ml-1">*</span>
-                    </label>
-                    <div className="grid grid-cols-4 gap-3">
-                      {[5, 10, 15, 20].map((num) => (
-                        <button
-                          key={num}
-                          onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
-                          className={`px-4 py-3 rounded-lg font-bold transition-all text-sm ${
-                            formData.question_count === num
-                              ? 'bg-indigo-600 text-white shadow-md'
-                              : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600'
-                          }`}
-                        >
-                          {num} 道
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['初级', '中级', '高级', '资深'].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
+                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        formData.difficulty === d 
+                          ? 'bg-indigo-600 text-white shadow-md' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                  {/* 知识库选择 */}
-                  <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[5, 10, 15, 20].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        formData.question_count === num 
+                          ? 'bg-indigo-600 text-white shadow-md' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      }`}
+                    >
+                      {num} 道
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 space-y-4">
+                  <div className="space-y-3">
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -553,7 +568,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         className="w-5 h-5 rounded accent-indigo-600"
                       />
                       <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                        使用我的知识库生成题目
+                        使用我的知识库增强题目
                       </span>
                     </label>
                     
@@ -566,7 +581,7 @@ const Interview = ({ prefillKeywords, username }) => {
                           </div>
                         ) : knowledgeBases.length === 0 ? (
                           <div className="text-sm text-slate-500 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                            还没有上传任何知识库
+                            还没有上传任何知识库，请先在知识库模块上传
                           </div>
                         ) : (
                           <select
@@ -577,7 +592,7 @@ const Interview = ({ prefillKeywords, username }) => {
                             <option value="">-- 选择知识库 --</option>
                             {knowledgeBases.map((kb) => (
                               <option key={kb.name} value={kb.name}>
-                                {kb.name} ({kb.file_count} 个文件)
+                                {kb.name}
                               </option>
                             ))}
                           </select>
@@ -621,43 +636,47 @@ const Interview = ({ prefillKeywords, username }) => {
             </div>
           )}
 
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
-            <div className="grid grid-cols-4 gap-2">
-              {[5, 10, 15, 20].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
-                  className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    formData.question_count === num 
-                      ? 'bg-indigo-600 text-white shadow-md' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                  }`}
-                >
-                  {num} 道
-                </button>
-              ))}
-            </div>
-          </div>
+          {(mode === 'company' || mode === 'resume') && (
+            <>
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[5, 10, 15, 20].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        formData.question_count === num 
+                          ? 'bg-indigo-600 text-white shadow-md' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      }`}
+                    >
+                      {num} 道
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
-            <div className="grid grid-cols-4 gap-2">
-              {['初级', '中级', '高级', '资深'].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
-                  className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    formData.difficulty === d 
-                      ? 'bg-indigo-600 text-white shadow-md' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                  }`}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
-          </div>
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['初级', '中级', '高级', '资深'].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
+                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        formData.difficulty === d 
+                          ? 'bg-indigo-600 text-white shadow-md' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <button 
