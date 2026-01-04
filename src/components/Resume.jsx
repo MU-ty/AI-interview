@@ -80,11 +80,15 @@ const ResumeModule = ({ username }) => {
     }
 
     setLoading(true);
+    setSyncStatus('正在上传和分析简历...');
+    
     try {
       const uploadFormData = new FormData();
       uploadFormData.append('file', resumeFile);
       
       const token = localStorage.getItem('token');
+      console.log('开始上传简历...');
+      
       const response = await fetch(`${API_BASE_URL}/interview/resume/upload_resume/`, {
         method: 'POST',
         body: uploadFormData,
@@ -94,53 +98,91 @@ const ResumeModule = ({ username }) => {
         signal: AbortSignal.timeout(60000)
       });
 
+      console.log('响应状态:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`上传失败: ${response.status}`);
+        const errorText = await response.text();
+        console.error('服务器响应错误:', errorText);
+        throw new Error(`上传失败: ${response.status} - ${errorText}`);
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let jsonAnalysis = null;
-      let fullResponseText = '';
+      // 检查是否是流式响应
+      const contentType = response.headers.get('content-type');
+      console.log('Content-Type:', contentType);
+      
+      if (contentType && contentType.includes('text/event-stream')) {
+        // SSE 流式响应处理
+        console.log('处理 SSE 流式响应...');
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let jsonAnalysis = null;
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            console.log('流读取完成');
+            break;
+          }
 
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+          console.log('收到数据块:', chunk.substring(0, 100));
 
-        const lines = buffer.split('\n\n');
-        buffer = lines[lines.length - 1];
+          const lines = buffer.split('\n\n');
+          buffer = lines[lines.length - 1];
 
-        for (let i = 0; i < lines.length - 1; i++) {
-          const line = lines[i];
-          if (line.startsWith('data: ')) {
-            const jsonStr = line.slice(6);
-            fullResponseText += jsonStr;
-            try {
-              const data = JSON.parse(jsonStr);
-              if (data.analysis) {
-                jsonAnalysis = data.analysis;
+          for (let i = 0; i < lines.length - 1; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6).trim();
+              console.log('解析 JSON:', jsonStr.substring(0, 100));
+              
+              try {
+                const data = JSON.parse(jsonStr);
+                console.log('解析结果:', data);
+                
+                if (data.analysis) {
+                  jsonAnalysis = data.analysis;
+                  console.log('找到分析结果:', jsonAnalysis);
+                }
+              } catch (e) {
+                console.warn('JSON 解析失败:', e.message, jsonStr.substring(0, 50));
               }
-            } catch (e) {
-              // 继续处理
             }
           }
         }
-      }
 
-      if (jsonAnalysis) {
-        setResumeAnalysis(jsonAnalysis);
-        setActiveTab('analysis');
-        setSyncStatus('✅ 简历分析完成');
+        if (jsonAnalysis) {
+          setResumeAnalysis(jsonAnalysis);
+          setActiveTab('analysis');
+          setSyncStatus('✅ 简历分析完成');
+          console.log('分析完成');
+        } else {
+          throw new Error('无法从流中解析简历分析结果');
+        }
       } else {
-        throw new Error('无法解析简历分析结果');
+        // 普通 JSON 响应处理
+        console.log('处理普通 JSON 响应...');
+        const data = await response.json();
+        console.log('JSON 响应:', data);
+        
+        if (data.analysis) {
+          setResumeAnalysis(data.analysis);
+          setActiveTab('analysis');
+          setSyncStatus('✅ 简历分析完成');
+        } else if (data.code === 200 && data.data) {
+          setResumeAnalysis(data.data);
+          setActiveTab('analysis');
+          setSyncStatus('✅ 简历分析完成');
+        } else {
+          throw new Error(data.message || '解析响应失败');
+        }
       }
     } catch (error) {
       console.error('简历分析失败:', error);
       setSyncStatus(`❌ 错误: ${error.message}`);
+      alert(`简历分析失败: ${error.message}`);
     } finally {
       setLoading(false);
     }

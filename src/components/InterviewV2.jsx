@@ -97,41 +97,95 @@ const InterviewV2 = ({ prefillKeywords, username }) => {
   const toggleListening = () => {
     if (!recognitionRef.current) {
       showNotification("您的浏览器不支持语音识别功能，请使用文字输入", "warning");
+      alert("您的浏览器不支持语音识别功能\n请使用 Chrome/Edge 浏览器或直接输入文字");
       return;
     }
 
     if (isListening) {
-      recognitionRef.current.stop();
+      console.log('停止语音识别');
+      try {
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.error('停止语音识别错误:', error);
+      }
+      setIsListening(false);
     } else {
+      console.log('开始语音识别');
       transcriptRef.current = '';
       setInterimTranscript('');
-      recognitionRef.current.start();
+      try {
+        recognitionRef.current.start();
+        console.log('语音识别已启动');
+      } catch (error) {
+        console.error('启动语音识别错误:', error);
+        if (error.name === 'NotAllowedError') {
+          showNotification("麦克风访问被拒绝，请在浏览器设置中允许使用麦克风", "error");
+          alert("麦克风访问被拒绝\n请点击地址栏的锁图标，允许使用麦克风");
+        } else {
+          showNotification(`语音识别启动失败: ${error.message}`, "error");
+        }
+        setIsListening(false);
+      }
     }
   };
 
   const speak = (text) => {
-    if (!enableAudio || !synthRef.current) return;
+    if (!synthRef.current) {
+      console.warn('语音合成不可用');
+      showNotification("您的浏览器不支持语音播放功能", "warning");
+      return;
+    }
 
+    if (!enableAudio) {
+      console.log('语音播放已禁用');
+      return;
+    }
+
+    if (!text || text.trim() === '') {
+      console.warn('没有文本需要播放');
+      return;
+    }
+
+    console.log('开始语音播放:', text.substring(0, 50));
+
+    // 停止当前播放
     synthRef.current.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = 1;
-    utterance.pitch = 1;
+    setIsSpeaking(false);
 
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-    };
+    try {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
 
-    utterance.onend = () => {
+      utterance.onstart = () => {
+        console.log('语音播放开始');
+        setIsSpeaking(true);
+      };
+
+      utterance.onend = () => {
+        console.log('语音播放结束');
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = (event) => {
+        console.error('语音合成错误:', event);
+        setIsSpeaking(false);
+        if (event.error === 'not-allowed') {
+          showNotification("语音播放被阻止，请检查浏览器权限设置", "error");
+        } else {
+          showNotification(`语音播放失败: ${event.error}`, "error");
+        }
+      };
+
+      synthRef.current.speak(utterance);
+      console.log('语音已加入播放队列');
+    } catch (error) {
+      console.error('语音播放异常:', error);
       setIsSpeaking(false);
-    };
-
-    utterance.onerror = (event) => {
-      console.error('语音合成错误:', event.error);
-      setIsSpeaking(false);
-    };
-
-    synthRef.current.speak(utterance);
+      showNotification(`语音播放失败: ${error.message}`, "error");
+    }
   };
 
   const generateQuestion = async () => {
@@ -151,45 +205,86 @@ const InterviewV2 = ({ prefillKeywords, username }) => {
     }
 
     setLoading(true);
+    console.log('开始生成问题...');
+    console.log('请求参数:', {
+      mode: interviewMode,
+      keywords,
+      company_name: companyName,
+      position,
+      difficulty,
+      question_index: currentQuestionIndex,
+      user_id: username
+    });
+    
     try {
+      const requestBody = {
+        mode: interviewMode,
+        keywords: keywords,
+        company_name: companyName,
+        position: position,
+        difficulty: difficulty,
+        question_index: currentQuestionIndex,
+        previous_answers: answers,
+        user_id: username,
+        history: [],
+      };
+      
+      console.log('发送请求到:', `${API_BASE_URL}/interview/v2/generate_next_question/`);
+      
       const response = await fetch(`${API_BASE_URL}/interview/v2/generate_next_question/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
-        body: JSON.stringify({
-          mode: interviewMode,
-          keywords: keywords,
-          company_name: companyName,
-          position: position,
-          difficulty: difficulty,
-          question_index: currentQuestionIndex,
-          previous_answers: answers,
-          user_id: username,
-          history: [],
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      const data = await response.json();
+      console.log('响应状态:', response.status);
       
-      if (data.code !== 200) {
-        showNotification(data.error || "生成问题失败", "error");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API 错误响应:', errorText);
+        throw new Error(`请求失败: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('API 响应数据:', data);
+      
+      if (!data) {
+        throw new Error('响应数据为空');
+      }
+      
+      if (data.code && data.code !== 200) {
+        console.error('业务错误:', data);
+        showNotification(data.error || data.message || "生成问题失败", "error");
         return;
       }
 
-      setCurrentQuestion(data.question);
+      // 兼容不同的响应格式
+      const question = data.question || data.data?.question;
+      if (!question) {
+        console.error('未找到问题字段:', data);
+        throw new Error('响应中未找到问题内容');
+      }
+
+      console.log('获取到问题:', question);
+      setCurrentQuestion(question);
       setInterimTranscript("");
       transcriptRef.current = "";
       setUserAnswer("");
       
       // 语音播放问题
       if (enableAudio) {
-        speak(data.question);
+        console.log('启用语音播放');
+        speak(question);
+      } else {
+        console.log('语音播放未启用');
       }
     } catch (error) {
       console.error("生成问题错误:", error);
       showNotification(`生成问题失败: ${error.message}`, "error");
+      alert(`生成问题失败: ${error.message}\n请检查网络连接和后端服务是否正常运行`);
     } finally {
       setLoading(false);
     }
