@@ -228,16 +228,29 @@ const ResumeModule = ({ username }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      
+      // 转换数据格式以匹配数据库模型
       const syncData = {
-        education: resumeAnalysis.basic_info?.education,
-        major: resumeAnalysis.basic_info?.major,
+        education: resumeAnalysis.basic_info?.education || '未提供',
+        major: resumeAnalysis.basic_info?.major || '未提供',
         work_years: resumeAnalysis.basic_info?.work_years || 0,
-        technical_skills: resumeAnalysis.technical_skills || [],
-        project_experience: resumeAnalysis.project_experience,
+        // 将数组转换为JSON对象格式
+        technical_skills: {
+          skills: resumeAnalysis.technical_skills || []
+        },
+        project_experience: {
+          projects: Array.isArray(resumeAnalysis.project_experience) 
+            ? resumeAnalysis.project_experience 
+            : (resumeAnalysis.project_experience?.projects || [])
+        },
         technical_score: resumeAnalysis.match_score?.technical || 0,
         experience_score: resumeAnalysis.match_score?.experience || 0,
-        improvement_suggestions: resumeAnalysis.improvement_suggestions || []
+        improvement_suggestions: {
+          suggestions: resumeAnalysis.improvement_suggestions || []
+        }
       };
+      
+      console.log('准备同步数据:', syncData);
 
       const response = await fetch(`${API_BASE_URL}/api/user/profile/sync-resume`, {
         method: 'POST',
@@ -248,16 +261,28 @@ const ResumeModule = ({ username }) => {
         body: JSON.stringify(syncData)
       });
 
+      console.log('同步响应状态:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('同步失败响应:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
       const result = await response.json();
+      console.log('同步结果:', result);
+      
       if (result.code === 200) {
         setSyncStatus('✅ 简历分析已同步到个人档案');
-        alert('✅ 简历分析已成功同步到个人档案！');
+        alert('✅ 简历分析已成功同步到个人档案！\n已更新：学历、专业、技能、项目经验、评分等信息。');
       } else {
-        setSyncStatus(`❌ 同步失败: ${result.message}`);
+        setSyncStatus(`❌ 同步失败: ${result.message || '未知错误'}`);
+        alert(`❌ 同步失败: ${result.message || '未知错误'}`);
       }
     } catch (error) {
       console.error('同步失败:', error);
       setSyncStatus(`❌ 同步错误: ${error.message}`);
+      alert(`❌ 同步错误: ${error.message}`);
     } finally {
       setLoading(false);
     }
