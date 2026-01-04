@@ -83,14 +83,21 @@ const UserProfile = ({ username, onProfileUpdate }) => {
       if (data.code === 200) {
         setProfile(data.data);
         setIsEditing(false);
-        // 同步更新侧边栏
+        
+        // 更新 localStorage 中的用户名
+        if (data.data.username) {
+          localStorage.setItem('username', data.data.username);
+        }
+        
+        // 同步更新侧边栏和 App.jsx 的状态
         if (onProfileUpdate) {
           onProfileUpdate({
             username: data.data.username,
             avatar_url: data.data.avatar_url
           });
         }
-        alert('✅ 个人信息已保存');
+        
+        alert('✅ 个人信息已保存，昵称已同步更新');
       }
     } catch (error) {
       console.error('保存失败:', error);
