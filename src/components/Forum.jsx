@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
 const Forum = () => {
   const [posts, setPosts] = useState([]);
@@ -145,30 +145,55 @@ const Forum = () => {
   const likePost = async (postId) => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        alert('请先登录');
+        return;
+      }
+      
+      console.log(`[Like] 正在为帖子 ${postId} 点赞...`);
       const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/like`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
-      const data = await response.json();
       
-      if (data.code === 200) {
+      console.log(`[Like] 响应状态: ${response.status}`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[Like] HTTP错误: ${response.status} ${response.statusText}`, errorText);
+        alert(`点赞失败: ${response.status}`);
+        return;
+      }
+      
+      const data = await response.json();
+      console.log(`[Like] 返回数据:`, data);
+      
+      if (data.code === 200 && data.data) {
+        const newLikeCount = data.data.like_count;
+        console.log(`[Like] 更新点赞数: ${newLikeCount}`);
+        
         // 局部更新点赞数，避免全量刷新
         if (showPostDetail && currentPost?.id === postId) {
           setCurrentPost(prev => ({
             ...prev,
-            like_count: data.data.like_count
+            like_count: newLikeCount
           }));
         }
         
         // 同时更新列表中的数据
         setPosts(prevPosts => prevPosts.map(post => 
-          post.id === postId ? { ...post, like_count: data.data.like_count } : post
+          post.id === postId ? { ...post, like_count: newLikeCount } : post
         ));
+      } else {
+        console.error(`[Like] 返回数据格式错误:`, data);
+        alert(`点赞失败: ${data.error || '未知错误'}`);
       }
     } catch (error) {
-      console.error('点赞失败:', error);
+      console.error('[Like] 网络错误:', error);
+      alert(`点赞失败: ${error.message}`);
     }
   };
 
@@ -513,14 +538,30 @@ const Forum = () => {
                   </div>
                 </div>
               ) : (
-                <div className="markdown-content" style={{ 
+                <div style={{ 
                   marginTop: '15px', 
                   padding: '15px', 
                   backgroundColor: '#f5f5f5',
                   borderRadius: '4px',
                   overflowX: 'auto'
                 }}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({node, ...props}) => <h1 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                      h2: ({node, ...props}) => <h2 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                      h3: ({node, ...props}) => <h3 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                      p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                      code: ({node, inline, ...props}) => {
+                        if (inline) {
+                          return <code style={{backgroundColor: '#eee', padding: '2px 4px', borderRadius: '4px', fontFamily: 'monospace'}} {...props} />
+                        }
+                        return <code {...props} />
+                      },
+                      pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#ccc', padding: '15px', borderRadius: '4px', overflowX: 'auto', marginBottom: '1em'}} {...props} />,
+                      blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666', marginBottom: '1em'}} {...props} />
+                    }}
+                  >
                     {currentPost.content}
                   </ReactMarkdown>
                 </div>
@@ -609,8 +650,24 @@ const Forum = () => {
                       </button>
                     )}
                   </div>
-                  <div className="markdown-content" style={{ overflowX: 'auto' }}>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div style={{ overflowX: 'auto' }}>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({node, ...props}) => <h1 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                        h2: ({node, ...props}) => <h2 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                        h3: ({node, ...props}) => <h3 style={{marginTop: '1em', marginBottom: '0.5em'}} {...props} />,
+                        p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
+                        code: ({node, inline, ...props}) => {
+                          if (inline) {
+                            return <code style={{backgroundColor: '#eee', padding: '2px 4px', borderRadius: '4px', fontFamily: 'monospace'}} {...props} />
+                          }
+                          return <code {...props} />
+                        },
+                        pre: ({node, ...props}) => <pre style={{backgroundColor: '#2d2d2d', color: '#ccc', padding: '15px', borderRadius: '4px', overflowX: 'auto', marginBottom: '1em'}} {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666', marginBottom: '1em'}} {...props} />
+                      }}
+                    >
                       {reply.content}
                     </ReactMarkdown>
                   </div>
