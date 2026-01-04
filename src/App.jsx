@@ -16,7 +16,6 @@ import {
   File
 } from 'lucide-react';
 import Interview from './components/Interview';
-import InterviewV2 from './components/InterviewV2';
 import KnowledgeBase from './components/KnowledgeBase';
 import Weakness from './components/Weakness';
 import Login from './components/Login';
@@ -31,7 +30,7 @@ function App() {
   const [prefillKeywords, setPrefillKeywords] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [username, setUsername] = useState(localStorage.getItem('username') || '');
-  const [useNewInterviewMode, setUseNewInterviewMode] = useState(true); // 使用新的一问一答模式
+
 
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
@@ -170,11 +169,7 @@ function App() {
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           <div className="max-w-6xl mx-auto">
-            {activeTab === 'interview' && (
-              useNewInterviewMode 
-                ? <InterviewV2 prefillKeywords={prefillKeywords} username={username} />
-                : <Interview prefillKeywords={prefillKeywords} username={username} />
-            )}
+            {activeTab === 'interview' && <Interview prefillKeywords={prefillKeywords} username={username} />}
             {activeTab === 'resume' && <Resume username={username} />}
             {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
             {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
