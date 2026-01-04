@@ -21,6 +21,8 @@ const Forum = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState('');
 
   const categories = ['技术讨论', '面试经验', '学习资料', '求职心得', '其他'];
 
@@ -152,14 +154,47 @@ const Forum = () => {
       const data = await response.json();
       
       if (data.code === 200) {
+        // 局部更新点赞数，避免全量刷新
         if (showPostDetail && currentPost?.id === postId) {
-          loadPostDetail(postId);
-        } else {
-          loadPosts();
+          setCurrentPost(prev => ({
+            ...prev,
+            like_count: data.data.like_count
+          }));
         }
+        
+        // 同时更新列表中的数据
+        setPosts(prevPosts => prevPosts.map(post => 
+          post.id === postId ? { ...post, like_count: data.data.like_count } : post
+        ));
       }
     } catch (error) {
       console.error('点赞失败:', error);
+    }
+  };
+
+  const updatePost = async (postId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content: editContent })
+      });
+      const data = await response.json();
+      
+      if (data.code === 200) {
+        alert('修改成功');
+        setIsEditing(false);
+        loadPostDetail(postId);
+      } else {
+        alert(`修改失败: ${data.error || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error('修改失败:', error);
+      alert('修改失败: ' + error.message);
     }
   };
 
@@ -435,17 +470,61 @@ const Forum = () => {
                 <span>{formatDate(currentPost.created_at)}</span>
               </div>
               
-              <div className="markdown-content" style={{ 
-                marginTop: '15px', 
-                padding: '15px', 
-                backgroundColor: '#f5f5f5',
-                borderRadius: '4px',
-                overflowX: 'auto'
-              }}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {currentPost.content}
-                </ReactMarkdown>
-              </div>
+              {isEditing ? (
+                <div style={{ marginTop: '15px' }}>
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '4px',
+                      border: '1px solid #ddd',
+                      minHeight: '200px',
+                      fontFamily: 'monospace'
+                    }}
+                  />
+                  <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                    <button
+                      onClick={() => updatePost(currentPost.id)}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      保存
+                    </button>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#ccc',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      取消
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="markdown-content" style={{ 
+                  marginTop: '15px', 
+                  padding: '15px', 
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '4px',
+                  overflowX: 'auto'
+                }}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {currentPost.content}
+                  </ReactMarkdown>
+                </div>
+              )}
               
               <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button
@@ -463,19 +542,37 @@ const Forum = () => {
                 </button>
                 
                 {currentPost.can_delete && (
-                  <button
-                    onClick={() => deletePost(currentPost.id)}
-                    style={{
-                      padding: '5px 15px',
-                      backgroundColor: '#f44336',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    删除
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditContent(currentPost.content);
+                        setIsEditing(true);
+                      }}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#FF9800',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => deletePost(currentPost.id)}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      删除
+                    </button>
+                  </>
                 )}
               </div>
             </div>
