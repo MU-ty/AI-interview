@@ -153,9 +153,13 @@ const ResumeModule = ({ username }) => {
                 const data = JSON.parse(jsonStr);
                 console.log('解析结果:', data);
                 
+                // 兼容多种返回格式：直接的对象或包含 analysis 字段的对象
                 if (data.analysis) {
                   jsonAnalysis = data.analysis;
-                  console.log('找到分析结果:', jsonAnalysis);
+                  console.log('找到分析结果 (data.analysis):', jsonAnalysis);
+                } else if (data.basic_info || data.technical_skills || data.match_score) {
+                  jsonAnalysis = data;
+                  console.log('找到分析结果 (direct object):', jsonAnalysis);
                 }
               } catch (e) {
                 console.warn('JSON 解析失败:', e.message, jsonStr.substring(0, 50));
