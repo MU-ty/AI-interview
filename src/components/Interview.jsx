@@ -202,7 +202,11 @@ const Interview = ({ prefillKeywords, username }) => {
                 if (line.startsWith('data: ')) {
                   try {
                     const jsonStr = line.slice(6); // 移除 'data: ' 前缀
+                    console.debug('📦 原始数据:', jsonStr.substring(0, 200));
                     const data = JSON.parse(jsonStr);
+                    
+                    // 详细的数据类型检查
+                    console.log('📊 收到数据类型:', Object.keys(data).slice(0, 5).join(', '));
                     
                     // 检查是否是错误响应
                     if (data.error) {
@@ -216,20 +220,31 @@ const Interview = ({ prefillKeywords, username }) => {
                       // 这是简历分析结果
                       jsonAnalysis = data;
                       hasContent = true;
-                      console.log('✅ 检测到简历分析结果:', jsonAnalysis);
+                      console.log('✅ 检测到简历分析结果');
+                      console.log('📊 分析字段:', {
+                        has_basic_info: !!data.basic_info,
+                        has_technical_skills: !!data.technical_skills,
+                        has_project_experience: !!data.project_experience,
+                        has_match_score: !!data.match_score
+                      });
                     } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
                       // 这是流式文本内容
                       const content = data.choices[0].delta.content;
                       setContent(prev => prev + content);
                       fullResponseText += content;
                       hasContent = true;
+                      console.debug('📝 流式内容块:', content.substring(0, 50));
+                    } else if (data.finish_reason) {
+                      // 流结束标记
+                      console.log('🏁 流处理完成');
                     } else {
                       // 记录其他类型的响应
                       console.log('📦 收到其他类型数据:', Object.keys(data));
                     }
                   } catch (parseErr) {
                     // 解析错误时跳过，但记录日志
-                    console.debug('JSON解析失败:', parseErr.message, line.slice(0, 100));
+                    console.debug('⚠️ JSON解析失败:', parseErr.message);
+                    console.debug('   原始内容:', line.slice(0, 100));
                   }
                 }
               }
@@ -241,31 +256,53 @@ const Interview = ({ prefillKeywords, username }) => {
           }
           
           // 如果没有获取到结构化的分析结果，尝试从文本内容解析
-          if (!jsonAnalysis && fullResponseText) {
-            console.log('📝 未找到结构化数据，尝试从文本解析...');
-            // 使用默认的分析结果结构
-            jsonAnalysis = {
-              basic_info: {
-                education: "信息待填充",
-                major: "信息待填充",
-                work_years: 0
-              },
-              technical_skills: ["待分析"],
-              project_experience: [],
-              match_score: {
-                technical: 50,
-                experience: 50
-              },
-              improvement_suggestions: ["请稍后重试，AI 模型正在优化分析功能"]
-            };
+          if (!jsonAnalysis) {
+            console.log('📝 未找到结构化数据，检查文本内容...');
+            console.log(`fullResponseText 长度: ${fullResponseText.length}, 内容: ${fullResponseText.substring(0, 200)}`);
+            
+            if (fullResponseText) {
+              // 尝试从文本中提取 JSON
+              const jsonMatch = fullResponseText.match(/\{[\s\S]*\}/);
+              if (jsonMatch) {
+                try {
+                  const extracted = JSON.parse(jsonMatch[0]);
+                  if (extracted.basic_info || extracted.technical_skills) {
+                    jsonAnalysis = extracted;
+                    console.log('✅ 成功从文本中提取 JSON 数据');
+                  }
+                } catch (e) {
+                  console.log('⚠️ JSON 提取和解析失败:', e.message);
+                }
+              }
+            }
+            
+            // 如果仍未获得分析结果，使用默认结构
+            if (!jsonAnalysis) {
+              console.log('⚠️ 使用默认的分析结果结构');
+              jsonAnalysis = {
+                basic_info: {
+                  education: "信息待填充",
+                  major: "信息待填充",
+                  work_years: 0
+                },
+                technical_skills: ["待分析"],
+                project_experience: [],
+                match_score: {
+                  technical: 50,
+                  experience: 50
+                },
+                improvement_suggestions: ["请稍后重试，AI 模型正在优化分析功能"]
+              };
+            }
             hasContent = true;
           }
           
           // 如果成功处理了数据，设置结果并退出重试循环
           if (jsonAnalysis) {
+            console.log('✅ 简历分析已设置，字段数:', Object.keys(jsonAnalysis).length);
             setResumeAnalysis(jsonAnalysis);
             setResumeTab('analysis'); // 自动切换到分析结果标签
-            console.log('✅ 简历分析已设置');
+            console.log('✅ 已切换到分析结果标签');
             setLoading(false);
             return;
           }
