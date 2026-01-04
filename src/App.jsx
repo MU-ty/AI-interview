@@ -30,18 +30,54 @@ function App() {
   const [prefillKeywords, setPrefillKeywords] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [username, setUsername] = useState(localStorage.getItem('username') || '');
+  const [displayName, setDisplayName] = useState(localStorage.getItem('displayName') || '');
+  const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem('avatarUrl') || '');
+
+  // 初始加载时获取个人资料以同步侧边栏
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      const fetchInitialProfile = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
+          const response = await fetch(`${API_BASE_URL}/api/user/profile/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await response.json();
+          if (data.code === 200) {
+            if (data.data.username) {
+              setDisplayName(data.data.username);
+              localStorage.setItem('displayName', data.data.username);
+            }
+            if (data.data.avatar_url) {
+              setAvatarUrl(data.data.avatar_url);
+              localStorage.setItem('avatarUrl', data.data.avatar_url);
+            }
+          }
+        } catch (error) {
+          console.error('同步个人资料失败:', error);
+        }
+      };
+      fetchInitialProfile();
+    }
+  }, [isLoggedIn]);
 
 
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
     setUsername(user);
+    setDisplayName(user); // 初始显示名为用户名
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('displayName');
+    localStorage.removeItem('avatarUrl');
     setIsLoggedIn(false);
     setUsername('');
+    setDisplayName('');
+    setAvatarUrl('');
   };
 
   if (!isLoggedIn) {
@@ -111,12 +147,25 @@ function App() {
 
         <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
           <div className="flex items-center">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
-              {username ? username[0].toUpperCase() : 'U'}
-            </div>
+            {avatarUrl ? (
+              <img 
+                src={avatarUrl.startsWith('http') ? avatarUrl : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010'}${avatarUrl}`} 
+                alt="Avatar" 
+                className="w-10 h-10 rounded-xl object-cover shadow-md"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = ''; // Fallback to initial if image fails
+                  setAvatarUrl('');
+                }}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                {displayName ? displayName[0].toUpperCase() : (username ? username[0].toUpperCase() : 'U')}
+              </div>
+            )}
             {isSidebarOpen && (
               <div className="ml-3 overflow-hidden flex-1">
-                <p className="text-sm font-bold truncate">{username || 'User'}</p>
+                <p className="text-sm font-bold truncate">{displayName || username || 'User'}</p>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse" />
                   <p className="text-xs text-slate-500 font-medium">在线</p>
@@ -174,7 +223,21 @@ function App() {
             {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
             {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
             {activeTab === 'forum' && <Forum username={username} />}
-            {activeTab === 'profile' && <UserProfile username={username} />}
+            {activeTab === 'profile' && (
+              <UserProfile 
+                username={username} 
+                onProfileUpdate={(newData) => {
+                  if (newData.username) {
+                    setDisplayName(newData.username);
+                    localStorage.setItem('displayName', newData.username);
+                  }
+                  if (newData.avatar_url) {
+                    setAvatarUrl(newData.avatar_url);
+                    localStorage.setItem('avatarUrl', newData.avatar_url);
+                  }
+                }} 
+              />
+            )}
           </div>
         </div>
       </main>
