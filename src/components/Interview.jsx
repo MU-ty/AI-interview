@@ -181,6 +181,7 @@ const Interview = ({ prefillKeywords, username }) => {
           const decoder = new TextDecoder();
           let buffer = '';
           let jsonAnalysis = null;
+          let hasContent = false;
 
           while (true) {
             try {
@@ -209,14 +210,16 @@ const Interview = ({ prefillKeywords, username }) => {
                       break;
                     }
                     
-                    // 检查是否是简历分析的JSON（包含basic_info）
-                    if (data.basic_info && (data.technical_skills !== undefined || data.project_experience !== undefined)) {
+                    // 检查是否是简历分析的JSON（包含basic_info或其他分析字段）
+                    if (data.basic_info || data.technical_skills || data.project_experience || data.match_score) {
                       // 这是简历分析结果
                       jsonAnalysis = data;
+                      hasContent = true;
                       console.log('检测到简历分析结果:', jsonAnalysis);
                     } else if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
                       // 这是流式文本内容
                       setContent(prev => prev + data.choices[0].delta.content);
+                      hasContent = true;
                     }
                   } catch (parseErr) {
                     // 解析错误时跳过，但记录日志
@@ -236,6 +239,13 @@ const Interview = ({ prefillKeywords, username }) => {
             setResumeAnalysis(jsonAnalysis);
             setResumeTab('analysis'); // 自动切换到分析结果标签
             console.log('简历分析已设置');
+            setLoading(false);
+            return;
+          }
+          
+          // 如果有其他内容但没有JSON分析，也认为成功
+          if (hasContent) {
+            console.log('简历上传完成，但未获取到结构化分析结果');
             setLoading(false);
             return;
           }
