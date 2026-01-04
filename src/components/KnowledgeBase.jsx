@@ -191,18 +191,35 @@ const KnowledgeBase = ({ username }) => {
   };
 
   const handleSearch = async () => {
-    if (!query) return;
+    if (!query) {
+      alert('请输入查询问题');
+      return;
+    }
+    if (!selectedKB) {
+      alert('请先选择一个知识库');
+      return;
+    }
     setSearching(true);
+    setSearchResult(null);
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/knowlage_chat/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, top_k: 3 }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          knowlage_name: selectedKB,
+          user_prompt: query,
+          history: '[]'
+        }),
       });
       const data = await response.json();
       setSearchResult(data);
     } catch (error) {
       console.error('Search error:', error);
+      alert('搜索失败: ' + error.message);
     } finally {
       setSearching(false);
     }
@@ -496,7 +513,7 @@ const KnowledgeBase = ({ username }) => {
                 <File className="text-indigo-600" size={24} />
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-white truncate max-w-md">{uploadedPreviewData.filename}</h4>
-                  <p className="text-xs text-slate-500 mt-1">类型: {uploadedPreviewData.filetype.toUpperCase()}</p>
+                  <p className="text-xs text-slate-500 mt-1">类型: {(uploadedPreviewData.filetype || 'unknown').toUpperCase()}</p>
                 </div>
               </div>
               <button 
@@ -510,23 +527,23 @@ const KnowledgeBase = ({ username }) => {
               </button>
             </div>
             <div className="flex-1 overflow-auto p-8">
-              {uploadedPreviewData.preview_type === 'text' ? (
-                <pre className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto">
+              {uploadedPreviewData.preview_type === 'text' || uploadedPreviewData.type === 'text' ? (
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto whitespace-pre-wrap break-words font-mono leading-relaxed">
                   {uploadedPreviewData.content}
-                </pre>
-              ) : uploadedPreviewData.preview_type === 'html' ? (
+                </div>
+              ) : uploadedPreviewData.preview_type === 'html' || uploadedPreviewData.type === 'html' ? (
                 <div 
                   className="p-8 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 prose dark:prose-invert max-w-none overflow-auto"
                   dangerouslySetInnerHTML={{ __html: uploadedPreviewData.content }}
                 />
-              ) : uploadedPreviewData.preview_type === 'pdf_text' ? (
-                <pre className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto">
+              ) : uploadedPreviewData.preview_type === 'pdf_text' || uploadedPreviewData.type === 'pdf_text' ? (
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 max-h-[calc(80vh-200px)] overflow-auto whitespace-pre-wrap break-words font-mono leading-relaxed">
                   {uploadedPreviewData.content}
-                </pre>
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-64 text-slate-400">
                   <AlertCircle size={48} className="mb-4 opacity-20" />
-                  <p className="font-medium">{uploadedPreviewData.content}</p>
+                  <p className="font-medium">{uploadedPreviewData.content || '无法显示预览内容'}</p>
                 </div>
               )}
             </div>
