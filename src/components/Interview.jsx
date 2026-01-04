@@ -427,6 +427,13 @@ const Interview = ({ prefillKeywords, username }) => {
               const jsonStr = line.slice(6); // 移除 'data: ' 前缀
               const data = JSON.parse(jsonStr);
               
+              // 检查是否是错误响应
+              if (data.error) {
+                console.error('❌ 服务器错误:', data.error);
+                setContent(prev => prev + `\n\n**错误: ${data.error}**`);
+                break;
+              }
+
               // 从 SSE 响应中提取文本内容
               if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
                 setContent(prev => prev + data.choices[0].delta.content);
