@@ -215,8 +215,45 @@ const KnowledgeBase = ({ username }) => {
           history: '[]'
         }),
       });
-      const data = await response.json();
-      setSearchResult(data);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: '搜索失败' }));
+        throw new Error(errorData.error || '搜索失败');
+      }
+
+      // 处理 SSE 流式响应
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6);  // 移除 'data: ' 前缀
+            if (jsonStr) {
+              try {
+                const data = JSON.parse(jsonStr);
+                if (data.choices && data.choices[0] && data.choices[0].delta) {
+                  const content = data.choices[0].delta.content || '';
+                  fullText += content;
+                  // 实时更新搜索结果
+                  setSearchResult({ answer: fullText });
+                }
+              } catch (e) {
+                console.warn('解析 SSE 数据失败:', e);
+              }
+            }
+          }
+        }
+      }
+      
+      setSearchResult({ answer: fullText || '未获得结果' });
     } catch (error) {
       console.error('Search error:', error);
       alert('搜索失败: ' + error.message);
