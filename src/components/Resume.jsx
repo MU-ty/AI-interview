@@ -1,5 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Eye, FileText, CheckCircle, AlertCircle, Loader2, X, Download, Send } from 'lucide-react';
+import { 
+  Upload, Eye, FileText, CheckCircle, AlertCircle, Loader2, X, Download, Send,
+  Target, BarChart3, BrainCircuit, Sparkles, Zap, Search, Layout, Layers, Globe,
+  Briefcase, GraduationCap, Award, TrendingUp, ChevronRight, MessageSquare
+} from 'lucide-react';
 import mammoth from 'mammoth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -16,7 +20,12 @@ const ResumeModule = ({ username }) => {
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('upload'); // upload, analysis, sync
+  const [subTab, setSubTab] = useState('single'); // single, batch, web
   const [syncStatus, setSyncStatus] = useState('');
+  
+  // 岗位匹配相关
+  const [targetPosition, setTargetPosition] = useState('');
+  const [jobDescription, setJobDescription] = useState('');
   
   // 面试相关状态
   const [startResumeInterview, setStartResumeInterview] = useState(false);
@@ -85,6 +94,8 @@ const ResumeModule = ({ username }) => {
     try {
       const uploadFormData = new FormData();
       uploadFormData.append('file', resumeFile);
+      if (targetPosition) uploadFormData.append('target_position', targetPosition);
+      if (jobDescription) uploadFormData.append('job_description', jobDescription);
       
       const token = localStorage.getItem('token');
       console.log('开始上传简历...');
@@ -396,63 +407,91 @@ const ResumeModule = ({ username }) => {
 
   if (startResumeInterview && resumeAnalysis) {
     return (
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* 回到简历管理 */}
-        <button
-          onClick={() => setStartResumeInterview(false)}
-          className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-        >
-          ← 返回简历管理
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setStartResumeInterview(false)}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-all shadow-sm"
+          >
+            <X size={18} />
+            <span className="font-bold text-sm">退出面试模式</span>
+          </button>
+          <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">简历定制面试中</span>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 问题展示 */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">
-              📝 面试问题
-            </h3>
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none flex flex-col h-[600px]">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600">
+                <MessageSquare size={20} />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                面试问题
+              </h3>
+            </div>
+            
             <div
               ref={scrollRef}
-              className="h-96 overflow-y-auto bg-slate-50 dark:bg-slate-800 p-4 rounded-lg mb-4 text-slate-700 dark:text-slate-300"
+              className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-800/50 prose dark:prose-invert max-w-none"
             >
-              {interviewContent || (loading ? '生成中...' : '问题将在此显示')}
+              {interviewContent ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {interviewContent}
+                </ReactMarkdown>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                  <Loader2 className="animate-spin mb-4" size={32} />
+                  <p className="font-bold">AI 正在根据您的简历生成定制化问题...</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* 答案与反馈 */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-8 h-[600px]">
             {/* 答案输入 */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">
-                ✍️ 您的回答
-              </h3>
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none flex flex-col flex-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-600">
+                  <Send size={20} />
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                  您的回答
+                </h3>
+              </div>
+              
               <textarea
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="请输入您的回答..."
-                className="w-full h-32 p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="请详细描述您的回答，AI 将根据您的回答进行深度评估..."
+                className="flex-1 w-full p-6 border border-slate-200 dark:border-slate-700 rounded-3xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white resize-none focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium leading-relaxed"
               />
+              
               <button
                 onClick={submitAnswer}
                 disabled={isEvaluating || !userAnswer.trim()}
-                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:bg-gray-400 transition-all flex items-center justify-center gap-2"
+                className="w-full mt-6 py-5 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 dark:shadow-none active:scale-[0.98]"
               >
-                {isEvaluating ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
-                <span>{isEvaluating ? '评估中...' : '提交回答'}</span>
+                {isEvaluating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} />}
+                <span className="uppercase tracking-widest text-sm">{isEvaluating ? '正在深度评估...' : '提交回答并获取反馈'}</span>
               </button>
             </div>
 
             {/* 评估反馈 */}
             {evaluation && (
-              <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-2xl border border-green-200 dark:border-green-800">
-                <h3 className="text-lg font-bold text-green-800 dark:text-green-100 mb-4 flex items-center gap-2">
-                  <CheckCircle size={20} />
-                  AI 评估反馈
-                </h3>
-                <div
-                  ref={evalScrollRef}
-                  className="h-48 overflow-y-auto prose dark:prose-invert max-w-none text-sm"
-                >
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-emerald-200 dark:shadow-none overflow-y-auto max-h-[250px] animate-in slide-in-from-top-4 duration-500">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <CheckCircle size={20} />
+                  </div>
+                  <h3 className="text-xl font-black">AI 深度评估</h3>
+                </div>
+                <div className="prose prose-invert max-w-none text-sm font-medium opacity-90">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {evaluation}
                   </ReactMarkdown>
@@ -468,313 +507,308 @@ const ResumeModule = ({ username }) => {
   // ==================== 简历管理视图 ====================
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* 标签页 */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-700">
-        {[
-          { id: 'upload', label: '📤 上传简历', icon: Upload },
-          { id: 'analysis', label: '📊 分析结果', icon: FileText },
-          { id: 'sync', label: '🔄 同步档案', icon: CheckCircle }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`py-3 px-4 font-semibold border-b-2 transition-all ${
-              activeTab === tab.id
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-700">
+      {/* Header Section */}
+      <div className="text-center space-y-4">
+        <h1 className="text-5xl font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center gap-4">
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 dark:shadow-none">
+            <BrainCircuit size={32} />
+          </div>
+          智能简历分析系统
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 text-lg font-medium">
+          AI 驱动的简历与岗位智能匹配分析
+        </p>
       </div>
 
-      {/* 上传标签页 */}
-      {activeTab === 'upload' && (
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
-              📄 上传您的简历
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">
-              支持 PDF、Word (.docx)、TXT 等格式。系统会自动分析您的简历，提取关键信息。
-            </p>
-          </div>
-
-          {/* 文件上传区 */}
-          <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-8 text-center">
-            <input
-              type="file"
-              accept=".pdf,.docx,.doc,.txt"
-              onChange={handleFileChange}
-              className="hidden"
-              id="resume-upload"
-            />
-            <label htmlFor="resume-upload" className="cursor-pointer block">
-              <Upload className="w-12 h-12 mx-auto mb-4 text-indigo-600" />
-              <p className="text-lg font-semibold text-slate-800 dark:text-white mb-1">
-                点击选择简历或拖拽上传
-              </p>
-              <p className="text-sm text-slate-500">支持 PDF、Word、TXT 格式</p>
-            </label>
-          </div>
-
-          {/* 已选择的文件 */}
-          {resumeFile && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                  <div>
-                    <p className="font-semibold text-slate-800 dark:text-white">{resumeFile.name}</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {(resumeFile.size / 1024).toFixed(2)} KB
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setResumeFile(null)}
-                  className="text-red-600 hover:text-red-700 dark:text-red-400"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* 预览按钮 */}
-              {previewUrl && (
-                <button
-                  onClick={handlePreviewClick}
-                  className="w-full mt-3 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 font-semibold flex items-center justify-center gap-2"
-                >
-                  <Eye size={18} />
-                  {showPreview ? '隐藏预览' : '查看预览'}
-                </button>
-              )}
-
-              {/* 预览内容 */}
-              {showPreview && previewContent && (
-                <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800 max-h-48 overflow-y-auto text-sm text-slate-700 dark:text-slate-300">
-                  {isPreviewLoading ? (
-                    <Loader2 className="animate-spin mx-auto" />
-                  ) : resumeFile.name.endsWith('.docx') ? (
-                    <div dangerouslySetInnerHTML={{ __html: previewContent }} />
-                  ) : (
-                    <pre className="whitespace-pre-wrap break-words">{previewContent}</pre>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 操作按钮 */}
-          <div className="flex gap-4">
+      {/* Sub Tabs */}
+      <div className="flex justify-center">
+        <div className="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex gap-1">
+          {[
+            { id: 'single', label: '单个简历分析', icon: FileText },
+            { id: 'batch', label: '批量简历分析', icon: Layers },
+            { id: 'web', label: '网页简历分析', icon: Globe }
+          ].map(tab => (
             <button
-              onClick={uploadAndAnalyzeResume}
-              disabled={!resumeFile || loading}
-              className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:bg-gray-400 transition-all flex items-center justify-center gap-2"
+              key={tab.id}
+              onClick={() => setSubTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
+                subTab === tab.id
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                  : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
             >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle size={20} />}
-              <span>{loading ? '分析中...' : '分析简历'}</span>
+              <tab.icon size={16} />
+              {tab.label}
             </button>
-            {resumeFile && (
-              <button
-                onClick={resetResume}
-                className="py-3 px-6 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600"
-              >
-                重置
-              </button>
-            )}
-          </div>
-
-          {/* 状态提示 */}
-          {syncStatus && (
-            <div className={`p-4 rounded-lg ${
-              syncStatus.includes('✅')
-                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-100 border border-green-200'
-                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-100 border border-red-200'
-            }`}>
-              {syncStatus}
-            </div>
-          )}
+          ))}
         </div>
-      )}
+      </div>
 
-      {/* 分析结果标签页 */}
-      {activeTab === 'analysis' && (
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6">
-          {resumeAnalysis ? (
-            <>
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                📊 简历分析结果
-              </h2>
-
-              {/* 基本信息 */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
-                  👤 基本信息
-                </h3>
-                <div className="grid grid-cols-2 gap-4 text-slate-700 dark:text-slate-300">
-                  <div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">学历</p>
-                    <p className="font-semibold">{resumeAnalysis.basic_info?.education || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">专业</p>
-                    <p className="font-semibold">{resumeAnalysis.basic_info?.major || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">工作年限</p>
-                    <p className="font-semibold">{resumeAnalysis.basic_info?.work_years || 0} 年</p>
-                  </div>
+      {subTab === 'single' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Left Column: Upload & Inputs */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600">
+                  <Upload size={20} />
                 </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">上传简历</h3>
               </div>
 
-              {/* 技能评分 */}
-              {resumeAnalysis.match_score && (
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { label: '技术能力', value: resumeAnalysis.match_score.technical },
-                    { label: '项目经验', value: resumeAnalysis.match_score.experience },
-                    { label: '学习能力', value: resumeAnalysis.match_score.learning },
-                    { label: '综合评分', value: resumeAnalysis.match_score.overall }
-                  ].map((item, idx) => (
-                    <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{item.label}</p>
-                      <div className="flex items-end gap-2">
-                        <span className="text-3xl font-bold text-indigo-600">{item.value}</span>
-                        <span className="text-slate-500">/100</span>
+              {/* File Upload Area */}
+              <div className={`relative border-2 border-dashed rounded-[2rem] p-10 text-center transition-all duration-500 ${
+                resumeFile 
+                  ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10' 
+                  : 'border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600'
+              }`}>
+                <input
+                  type="file"
+                  accept=".pdf,.docx,.doc,.txt"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  id="resume-upload"
+                />
+                
+                {resumeFile ? (
+                  <div className="space-y-4">
+                    <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center text-white mx-auto shadow-xl shadow-emerald-200 dark:shadow-none animate-in zoom-in duration-500">
+                      <CheckCircle size={40} />
+                    </div>
+                    <div>
+                      <p className="text-lg font-black text-slate-900 dark:text-white truncate max-w-[250px] mx-auto">
+                        {resumeFile.name}
+                      </p>
+                      <p className="text-sm font-bold text-emerald-600">文件已选择</p>
+                      <p className="text-xs text-slate-400 mt-1">{(resumeFile.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setResumeFile(null); }}
+                      className="px-4 py-1.5 bg-white dark:bg-slate-800 rounded-full text-xs font-black text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-50 transition-all relative z-20"
+                    >
+                      重新选择
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-300 mx-auto">
+                      <Upload size={40} />
+                    </div>
+                    <div>
+                      <p className="text-lg font-black text-slate-900 dark:text-white">点击选择简历或拖拽上传</p>
+                      <p className="text-sm font-medium text-slate-400 mt-1">支持 PDF、Word、TXT 格式</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Inputs */}
+              <div className="mt-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">目标岗位</label>
+                  <div className="relative">
+                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input
+                      type="text"
+                      value={targetPosition}
+                      onChange={(e) => setTargetPosition(e.target.value)}
+                      placeholder="例如：大模型应用工程师"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">岗位描述</label>
+                  <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="粘贴岗位要求，AI 将进行精准匹配分析..."
+                    className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl h-32 resize-none focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                  />
+                </div>
+
+                <button
+                  onClick={uploadAndAnalyzeResume}
+                  disabled={!resumeFile || loading}
+                  className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 dark:shadow-none active:scale-[0.98]"
+                >
+                  {loading ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
+                  <span className="uppercase tracking-widest text-sm">{loading ? '正在深度分析中...' : '开始智能分析'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Analysis Results */}
+          <div className="lg:col-span-7">
+            {resumeAnalysis ? (
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600">
+                      <BarChart3 size={20} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white">分析结果</h3>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setStartResumeInterview(true)}
+                      className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-100 transition-all"
+                    >
+                      定制面试
+                    </button>
+                    <button 
+                      onClick={syncResumeToProfile}
+                      className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-100 transition-all"
+                    >
+                      同步档案
+                    </button>
+                  </div>
+                </div>
+
+                {/* Match Score Circle */}
+                <div className="flex flex-col items-center justify-center py-6">
+                  <div className="relative w-48 h-48">
+                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                      <circle
+                        className="text-slate-100 dark:text-slate-800 stroke-current"
+                        strokeWidth="8"
+                        fill="transparent"
+                        r="40"
+                        cx="50"
+                        cy="50"
+                      />
+                      <circle
+                        className="text-indigo-600 stroke-current transition-all duration-1000 ease-out"
+                        strokeWidth="8"
+                        strokeDasharray={251.2}
+                        strokeDashoffset={251.2 - (251.2 * (resumeAnalysis.match_score?.overall || 0)) / 100}
+                        strokeLinecap="round"
+                        fill="transparent"
+                        r="40"
+                        cx="50"
+                        cy="50"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-5xl font-black text-slate-900 dark:text-white">{resumeAnalysis.match_score?.overall || 0}%</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">整体匹配度</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detailed Scores */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <Zap size={14} className="text-orange-500" />
+                          <span className="text-sm font-black text-slate-700 dark:text-slate-200">技能匹配分析</span>
+                        </div>
+                        <span className="text-xs font-black text-slate-400">{resumeAnalysis.match_score?.technical || 0}%</span>
                       </div>
-                      <div className="mt-2 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-indigo-600 rounded-full"
-                          style={{ width: `${item.value}%` }}
-                        />
+                      <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-1000"
+                          style={{ width: `${resumeAnalysis.match_score?.technical || 0}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {resumeAnalysis.technical_skills?.slice(0, 5).map((skill, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-md text-[10px] font-bold text-slate-500">{skill}</span>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
 
-              {/* 技能标签 */}
-              {resumeAnalysis.technical_skills && (
-                <div>
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-3">🛠️ 技术技能</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {resumeAnalysis.technical_skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-sm font-medium"
-                      >
-                        {skill}
-                      </span>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <Briefcase size={14} className="text-blue-500" />
+                          <span className="text-sm font-black text-slate-700 dark:text-slate-200">工作经验匹配</span>
+                        </div>
+                        <span className="text-xs font-black text-slate-400">{resumeAnalysis.match_score?.experience || 0}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full transition-all duration-1000"
+                          style={{ width: `${resumeAnalysis.match_score?.experience || 0}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-400">相关年限: {resumeAnalysis.basic_info?.work_years || 0} 年</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <GraduationCap size={14} className="text-emerald-500" />
+                          <span className="text-sm font-black text-slate-700 dark:text-slate-200">教育背景匹配</span>
+                        </div>
+                        <span className="text-xs font-black text-slate-400">{resumeAnalysis.match_score?.learning || 0}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-1000"
+                          style={{ width: `${resumeAnalysis.match_score?.learning || 0}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-400">{resumeAnalysis.basic_info?.education} · {resumeAnalysis.basic_info?.major}</p>
+                    </div>
+
+                    <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles size={14} className="text-purple-500" />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI 综合评估</span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                        {resumeAnalysis.improvement_suggestions?.[0] || '候选人具备较强的技术背景，但在特定领域仍有提升空间。'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Improvement Suggestions */}
+                <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                  <h4 className="text-sm font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <TrendingUp size={16} className="text-indigo-500" />
+                    改进建议
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {resumeAnalysis.improvement_suggestions?.slice(0, 4).map((sug, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3 bg-indigo-50/30 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100/50 dark:border-indigo-900/20">
+                        <ChevronRight size={14} className="text-indigo-500 mt-0.5 shrink-0" />
+                        <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">{sug}</p>
+                      </div>
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* 改进建议 */}
-              {resumeAnalysis.improvement_suggestions && resumeAnalysis.improvement_suggestions.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-3">💡 改进建议</h4>
-                  <ul className="space-y-2">
-                    {resumeAnalysis.improvement_suggestions.map((suggestion, idx) => (
-                      <li key={idx} className="flex gap-3 text-slate-700 dark:text-slate-300">
-                        <span className="text-indigo-600 font-bold">•</span>
-                        <span>{suggestion}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* 操作按钮 */}
-              <div className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <button
-                  onClick={() => setStartResumeInterview(true)}
-                  className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all"
-                >
-                  🎤 开始简历定制面试
-                </button>
-                <button
-                  onClick={() => setActiveTab('sync')}
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all"
-                >
-                  🔄 同步到档案
-                </button>
               </div>
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-              <p className="text-slate-600 dark:text-slate-400">
-                请先在"上传简历"标签页分析简历
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="h-full min-h-[600px] bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-10 text-center">
+                <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-200 mb-8">
+                  <BarChart3 size={48} />
+                </div>
+                <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2">等待分析</h4>
+                <p className="text-slate-400 max-w-xs mx-auto">
+                  上传简历并填写岗位信息后，AI 将在此为您呈现深度匹配报告。
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
-
-      {/* 同步标签页 */}
-      {activeTab === 'sync' && (
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6">
-          {resumeAnalysis ? (
-            <>
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                🔄 同步到个人档案
-              </h2>
-
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
-                  <CheckCircle size={20} />
-                  即将同步以下信息
-                </h3>
-                <ul className="space-y-2 text-blue-800 dark:text-blue-200 text-sm">
-                  <li>✓ 教育背景（学历、专业）</li>
-                  <li>✓ 工作经验（工作年限）</li>
-                  <li>✓ 技术技能（所有识别到的技能）</li>
-                  <li>✓ 项目经历（主要项目信息）</li>
-                  <li>✓ 能力评分（技术、经验、综合分数）</li>
-                  <li>✓ 改进建议（针对性的发展方向）</li>
-                </ul>
-              </div>
-
-              <button
-                onClick={syncResumeToProfile}
-                disabled={loading}
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:bg-gray-400 transition-all text-lg flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="animate-spin" size={20} />
-                    <span>同步中...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download size={20} />
-                    <span>立即同步到个人档案</span>
-                  </>
-                )}
-              </button>
-
-              {syncStatus && (
-                <div className={`p-4 rounded-lg ${
-                  syncStatus.includes('✅')
-                    ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-100 border border-green-200'
-                    : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-100 border border-red-200'
-                }`}>
-                  {syncStatus}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-              <p className="text-slate-600 dark:text-slate-400">
-                请先在"上传简历"标签页分析简历
-              </p>
-            </div>
-          )}
+      ) : (
+        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-20 border border-slate-200 dark:border-slate-800 text-center">
+          <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-8 text-slate-200">
+            <Layout size={48} />
+          </div>
+          <h4 className="text-2xl font-black text-slate-900 dark:text-white mb-4">功能开发中</h4>
+          <p className="text-slate-500 max-w-md mx-auto">
+            {subTab === 'batch' ? '批量简历分析功能正在内测中，敬请期待。' : '网页简历分析功能正在对接中，即将上线。'}
+          </p>
         </div>
       )}
     </div>
