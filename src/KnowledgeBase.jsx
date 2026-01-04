@@ -5,7 +5,7 @@ import mammoth from 'mammoth';
 // API 基础 URL - 支持环境变量和默认值
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
-const KnowledgeBase = () => {
+const KnowledgeBase = ({ username }) => {
   const [file, setFile] = useState(null);
   const [knowledgeBaseName, setKnowledgeBaseName] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -36,7 +36,12 @@ const KnowledgeBase = () => {
   const loadKnowledgeBases = async () => {
     setLoadingKBList(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       if (data.code === 200) {
         setKnowledgeBases(data.data || []);
@@ -50,7 +55,12 @@ const KnowledgeBase = () => {
 
   const loadKnowledgeBaseFiles = async (kbName) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/knowledge_base_files/?knowlage_name=${encodeURIComponent(kbName)}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/knowledge_base_files/?knowlage_name=${encodeURIComponent(kbName)}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       if (data.code === 200) {
         setKBFiles(data.data || []);
@@ -72,8 +82,14 @@ const KnowledgeBase = () => {
     setShowUploadedPreview(true);
     
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(
-        `${API_BASE_URL}/knowledge_base_file_preview/?knowlage_name=${encodeURIComponent(kbName)}&filename=${encodeURIComponent(fileName)}`
+        `${API_BASE_URL}/knowledge_base_file_preview/?knowlage_name=${encodeURIComponent(kbName)}&filename=${encodeURIComponent(fileName)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       const data = await response.json();
       
@@ -134,8 +150,12 @@ const KnowledgeBase = () => {
     formData.append('knowlage_name', knowledgeBaseName);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/knowlage_upload/`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
       const data = await response.json();
@@ -171,18 +191,35 @@ const KnowledgeBase = () => {
   };
 
   const handleSearch = async () => {
-    if (!query) return;
+    if (!query) {
+      alert('请输入查询问题');
+      return;
+    }
+    if (!selectedKB) {
+      alert('请先选择一个知识库');
+      return;
+    }
     setSearching(true);
+    setSearchResult(null);
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/knowlage_chat/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, top_k: 3 }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          knowlage_name: selectedKB,
+          user_prompt: query,
+          history: '[]'
+        }),
       });
       const data = await response.json();
       setSearchResult(data);
     } catch (error) {
       console.error('Search error:', error);
+      alert('搜索失败: ' + error.message);
     } finally {
       setSearching(false);
     }
