@@ -21,6 +21,12 @@ const Interview = ({ prefillKeywords, username }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
   
+  // 知识库相关状态
+  const [knowledgeBases, setKnowledgeBases] = useState([]);
+  const [loadingKBList, setLoadingKBList] = useState(false);
+  const [useKnowledgeBase, setUseKnowledgeBase] = useState(false);
+  const [selectedKBForInterview, setSelectedKBForInterview] = useState('');
+  
   const [formData, setFormData] = useState({
     company_name: '阿里巴巴',
     position: 'Java后端开发',
@@ -34,7 +40,29 @@ const Interview = ({ prefillKeywords, username }) => {
       setMode('self');
       setFormData(prev => ({ ...prev, keywords: prefillKeywords }));
     }
+    // 加载知识库列表
+    loadKnowledgeBasesData();
   }, [prefillKeywords]);
+
+  const loadKnowledgeBasesData = async () => {
+    setLoadingKBList(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/knowledge_bases/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (data.code === 200) {
+        setKnowledgeBases(data.data || []);
+      }
+    } catch (error) {
+      console.error('加载知识库列表失败:', error);
+    } finally {
+      setLoadingKBList(false);
+    }
+  };
 
   const scrollRef = useRef(null);
   const evalScrollRef = useRef(null);
@@ -109,7 +137,7 @@ const Interview = ({ prefillKeywords, username }) => {
         keywords: formData.keywords,
         difficulty: formData.difficulty,
         question_count: parseInt(formData.question_count),
-        knowlage_name: "[]",
+        knowlage_name: useKnowledgeBase && selectedKBForInterview ? selectedKBForInterview : "[]",
         history: [],
         user_id: username || 'guest'
       };
@@ -471,19 +499,95 @@ const Interview = ({ prefillKeywords, username }) => {
           )}
 
           {mode === 'self' && (
-            <div className="col-span-2 space-y-3">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                <BookOpen size={16} className="mr-2 text-indigo-500" />
-                考察关键词
-              </label>
-              <input 
-                name="keywords"
-                value={formData.keywords}
-                onChange={handleInputChange}
-                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
-                placeholder="例如：Redis缓存优化, JVM调优, 分布式事务"
-              />
-            </div>
+            <>
+              <div className="col-span-2 space-y-3">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                  <BookOpen size={16} className="mr-2 text-indigo-500" />
+                  考察关键词
+                </label>
+                <input 
+                  name="keywords"
+                  value={formData.keywords}
+                  onChange={handleInputChange}
+                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                  placeholder="例如：Redis缓存优化, JVM调优, 分布式事务"
+                />
+              </div>
+              
+              <div className="col-span-2">
+                <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 space-y-6">
+                  {/* 题目数量选择 */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                      生成题目数量 <span className="text-red-500 ml-1">*</span>
+                    </label>
+                    <div className="grid grid-cols-4 gap-3">
+                      {[5, 10, 15, 20].map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                          className={`px-4 py-3 rounded-lg font-bold transition-all text-sm ${
+                            formData.question_count === num
+                              ? 'bg-indigo-600 text-white shadow-md'
+                              : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600'
+                          }`}
+                        >
+                          {num} 道
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 知识库选择 */}
+                  <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={useKnowledgeBase}
+                        onChange={(e) => {
+                          setUseKnowledgeBase(e.target.checked);
+                          if (!e.target.checked) {
+                            setSelectedKBForInterview('');
+                          }
+                        }}
+                        className="w-5 h-5 rounded accent-indigo-600"
+                      />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        使用我的知识库生成题目
+                      </span>
+                    </label>
+                    
+                    {useKnowledgeBase && (
+                      <div className="ml-8 space-y-2">
+                        {loadingKBList ? (
+                          <div className="flex items-center justify-center py-3">
+                            <Loader2 className="animate-spin text-indigo-500 mr-2" size={16} />
+                            <span className="text-sm text-slate-500">加载知识库...</span>
+                          </div>
+                        ) : knowledgeBases.length === 0 ? (
+                          <div className="text-sm text-slate-500 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                            还没有上传任何知识库
+                          </div>
+                        ) : (
+                          <select
+                            value={selectedKBForInterview}
+                            onChange={(e) => setSelectedKBForInterview(e.target.value)}
+                            className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          >
+                            <option value="">-- 选择知识库 --</option>
+                            {knowledgeBases.map((kb) => (
+                              <option key={kb.name} value={kb.name}>
+                                {kb.name} ({kb.file_count} 个文件)
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
           {mode === 'resume' && (
@@ -518,6 +622,25 @@ const Interview = ({ prefillKeywords, username }) => {
           )}
 
           <div className="space-y-3">
+            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
+            <div className="grid grid-cols-4 gap-2">
+              {[5, 10, 15, 20].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                  className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    formData.question_count === num 
+                      ? 'bg-indigo-600 text-white shadow-md' 
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  {num} 道
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
             <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
             <div className="grid grid-cols-4 gap-2">
               {['初级', '中级', '高级', '资深'].map((d) => (
@@ -533,24 +656,6 @@ const Interview = ({ prefillKeywords, username }) => {
                   {d}
                 </button>
               ))}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量 ({formData.question_count})</label>
-            <input 
-              type="range"
-              name="question_count"
-              min="1"
-              max="10"
-              value={formData.question_count}
-              onChange={handleInputChange}
-              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-            />
-            <div className="flex justify-between text-xs text-slate-400 font-bold">
-              <span>1 题</span>
-              <span>5 题</span>
-              <span>10 题</span>
             </div>
           </div>
         </div>
