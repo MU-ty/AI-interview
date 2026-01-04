@@ -95,7 +95,6 @@ function App() {
     { id: 'knowledge', name: '知识库管理', icon: BookOpen },
     { id: 'weakness', name: '薄弱点强化', icon: BrainCircuit },
     { id: 'forum', name: '讨论论坛', icon: Users },
-    { id: 'code', name: '代码专区', icon: Code},
     { id: 'profile', name: '个人档案', icon: User },
   ];
 
