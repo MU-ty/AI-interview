@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, File, Search, Trash2, CheckCircle2, AlertCircle, Loader2, Sparkles, Eye, X, FolderOpen } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import mammoth from 'mammoth';
 
 // API 基础 URL - 支持环境变量和默认值
@@ -508,9 +510,11 @@ const KnowledgeBase = ({ username }) => {
                 <Sparkles size={16} className="mr-2" />
                 AI 深度回答
               </h4>
-              <p className="text-slate-700 dark:text-slate-200 leading-relaxed text-lg">
-                {searchResult.answer}
-              </p>
+              <div className="prose dark:prose-invert max-w-none prose-p:text-slate-700 dark:prose-p:text-slate-200 prose-p:leading-relaxed prose-p:text-lg">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {searchResult.answer}
+                </ReactMarkdown>
+              </div>
             </div>
             
             {searchResult.citations && searchResult.citations.length > 0 && (
