@@ -11,13 +11,15 @@ import {
   Menu,
   X,
   Sparkles,
-  Users
+  Users,
+  User
 } from 'lucide-react';
 import Interview from './components/Interview';
 import KnowledgeBase from './components/KnowledgeBase';
 import Weakness from './components/Weakness';
 import Login from './components/Login';
 import Forum from './components/Forum';
+import UserProfile from './components/UserProfile';
 import { LogOut } from 'lucide-react';
 
 function App() {
@@ -53,6 +55,7 @@ function App() {
     { id: 'knowledge', name: '知识库管理', icon: BookOpen },
     { id: 'weakness', name: '薄弱点强化', icon: BrainCircuit },
     { id: 'forum', name: '讨论论坛', icon: Users },
+    { id: 'profile', name: '个人档案', icon: User },
   ];
 
   return (
@@ -145,6 +148,7 @@ function App() {
               {activeTab === 'knowledge' && '管理你的个人知识库，提升 AI 准确度'}
               {activeTab === 'weakness' && '针对性练习，攻克你的知识盲区'}
               {activeTab === 'forum' && '与其他用户交流学习经验和面试心得'}
+              {activeTab === 'profile' && '管理个人信息、简历数据和头像'}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -164,6 +168,7 @@ function App() {
             {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
             {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
             {activeTab === 'forum' && <Forum username={username} />}
+            {activeTab === 'profile' && <UserProfile username={username} />}
           </div>
         </div>
       </main>
