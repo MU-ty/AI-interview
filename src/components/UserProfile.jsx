@@ -6,7 +6,7 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8010';
 
-const UserProfile = ({ username }) => {
+const UserProfile = ({ username, onProfileUpdate }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,6 +41,13 @@ const UserProfile = ({ username }) => {
       const data = await response.json();
       if (data.code === 200) {
         setProfile(data.data);
+        // 同步更新侧边栏
+        if (onProfileUpdate) {
+          onProfileUpdate({
+            username: data.data.username,
+            avatar_url: data.data.avatar_url
+          });
+        }
         setEditData({
           username: data.data.username || '',
           education: data.data.education || '',
@@ -76,6 +83,13 @@ const UserProfile = ({ username }) => {
       if (data.code === 200) {
         setProfile(data.data);
         setIsEditing(false);
+        // 同步更新侧边栏
+        if (onProfileUpdate) {
+          onProfileUpdate({
+            username: data.data.username,
+            avatar_url: data.data.avatar_url
+          });
+        }
         alert('✅ 个人信息已保存');
       }
     } catch (error) {
@@ -144,6 +158,12 @@ const UserProfile = ({ username }) => {
           ...prev,
           avatar_url: data.data.avatar_url
         }));
+        // 同步更新侧边栏
+        if (onProfileUpdate) {
+          onProfileUpdate({
+            avatar_url: data.data.avatar_url
+          });
+        }
         alert('✅ 头像上传成功');
         // 刷新头像以显示更新
         setTimeout(fetchProfile, 500);
