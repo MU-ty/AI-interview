@@ -813,575 +813,192 @@ const Interview = ({ prefillKeywords, username }) => {
       </div>
 
       {/* Config Panel */}
-      <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {mode === 'company' && (
-            <>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                  <Building2 size={16} className="mr-2 text-indigo-500" />
-                  公司名称
-                </label>
-                <input 
-                  name="company_name"
-                  value={formData.company_name}
-                  onChange={handleInputChange}
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
-                  placeholder="例如：阿里巴巴"
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                  <Sparkles size={16} className="mr-2 text-indigo-500" />
-                  应聘岗位
-                </label>
-                <input 
-                  name="position"
-                  value={formData.position}
-                  onChange={handleInputChange}
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
-                  placeholder="例如：Java后端开发"
-                />
-              </div>
-            </>
-          )}
-
-          {mode === 'self' && (
-            <>
-              <div className="col-span-2 space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                  <BookOpen size={16} className="mr-2 text-indigo-500" />
-                  考察关键词
-                </label>
-                <input 
-                  name="keywords"
-                  value={formData.keywords}
-                  onChange={handleInputChange}
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
-                  placeholder="例如：Redis缓存优化, JVM调优, 分布式事务"
-                />
-              </div>
-              
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {['初级', '中级', '高级', '资深'].map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
-                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                        formData.difficulty === d 
-                          ? 'bg-indigo-600 text-white shadow-md' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                      }`}
-                    >
-                      {d}
-                    </button>
-                  ))}
+      {mode !== 'resume' ? (
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {mode === 'company' && (
+              <>
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                    <Building2 size={16} className="mr-2 text-indigo-500" />
+                    公司名称
+                  </label>
+                  <input 
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleInputChange}
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    placeholder="例如：阿里巴巴"
+                  />
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[5, 10, 15, 20].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
-                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                        formData.question_count === num 
-                          ? 'bg-indigo-600 text-white shadow-md' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                      }`}
-                    >
-                      {num} 道
-                    </button>
-                  ))}
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                    <Sparkles size={16} className="mr-2 text-indigo-500" />
+                    应聘岗位
+                  </label>
+                  <input 
+                    name="position"
+                    value={formData.position}
+                    onChange={handleInputChange}
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    placeholder="例如：Java后端开发"
+                  />
                 </div>
-              </div>
+              </>
+            )}
 
-              <div className="col-span-2">
-                <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 space-y-4">
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={useKnowledgeBase}
-                        onChange={(e) => {
-                          setUseKnowledgeBase(e.target.checked);
-                          if (!e.target.checked) {
-                            setSelectedKBForInterview('');
-                          }
-                        }}
-                        className="w-5 h-5 rounded accent-indigo-600"
-                      />
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                        使用我的知识库增强题目
-                      </span>
-                    </label>
-                    
-                    {useKnowledgeBase && (
-                      <div className="ml-8 space-y-2">
-                        {loadingKBList ? (
-                          <div className="flex items-center justify-center py-3">
-                            <Loader2 className="animate-spin text-indigo-500 mr-2" size={16} />
-                            <span className="text-sm text-slate-500">加载知识库...</span>
-                          </div>
-                        ) : knowledgeBases.length === 0 ? (
-                          <div className="text-sm text-slate-500 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                            还没有上传任何知识库，请先在知识库模块上传
-                          </div>
-                        ) : (
-                          <select
-                            value={selectedKBForInterview}
-                            onChange={(e) => setSelectedKBForInterview(e.target.value)}
-                            className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          >
-                            <option value="">-- 选择知识库 --</option>
-                            {knowledgeBases.map((kb) => (
-                              <option key={kb.name} value={kb.name}>
-                                {kb.name}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                    )}
+            {mode === 'self' && (
+              <>
+                <div className="col-span-2 space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                    <BookOpen size={16} className="mr-2 text-indigo-500" />
+                    考察关键词
+                  </label>
+                  <input 
+                    name="keywords"
+                    value={formData.keywords}
+                    onChange={handleInputChange}
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    placeholder="例如：Redis缓存优化, JVM调优, 分布式事务"
+                  />
+                </div>
+                
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {['初级', '中级', '高级', '资深'].map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
+                        className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                          formData.difficulty === d 
+                            ? 'bg-indigo-600 text-white shadow-md' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </>
-          )}
 
-          {mode === 'resume' && (
-            <div className="col-span-2">
-              {/* 标签页导航 */}
-              <div className="flex space-x-2 mb-6">
-                {[
-                  { id: 'upload', name: '上传简历', icon: Upload },
-                  { id: 'analysis', name: '分析结果', icon: BrainCircuit },
-                  { id: 'sync', name: '同步简历分析', icon: CheckCircle }
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setResumeTab(tab.id)}
-                    className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center space-x-2 ${
-                      resumeTab === tab.id
-                        ? 'bg-indigo-600 text-white shadow-md'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                    }`}
-                  >
-                    <tab.icon size={18} />
-                    <span>{tab.name}</span>
-                  </button>
-                ))}
-              </div>
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[5, 10, 15, 20].map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                        className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                          formData.question_count === num 
+                            ? 'bg-indigo-600 text-white shadow-md' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        }`}
+                      >
+                        {num} 道
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              {/* 上传简历标签 */}
-              {resumeTab === 'upload' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* 左侧：上传区域 */}
-                  <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border-2 border-dashed border-indigo-200 dark:border-indigo-800">
-                    <div className="space-y-6">
-                      <div className="text-center">
-                        {resumeFile ? (
-                          <div className="flex flex-col items-center space-y-3">
-                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                              <CheckCircle className="text-green-600" size={32} />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">文件已选择</p>
-                              <p className="text-xs text-slate-500 mt-1 truncate max-w-[200px]">{resumeFile.name}</p>
-                            </div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                              <div className="bg-green-500 h-2 rounded-full w-full"></div>
-                            </div>
-                            {resumeFile && (
-                              <button 
-                                onClick={() => setShowPreview(true)}
-                                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center space-x-1"
-                              >
-                                <Eye size={14} />
-                                <span>查看预览</span>
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="relative">
-                            <input 
-                              type="file"
-                              onChange={handleFileChange}
-                              accept=".pdf,.doc,.docx"
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                            />
-                            <div className="flex flex-col items-center space-y-3 py-8">
-                              <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                                <Upload className="text-indigo-600" size={32} />
-                              </div>
-                              <div>
-                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">点击上传简历</p>
-                                <p className="text-xs text-slate-500 mt-1">支持 PDF、Word 格式</p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-3 pt-6 border-t border-slate-200 dark:border-slate-700">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">目标职位</label>
-                        <input 
-                          type="text"
-                          value={formData.position}
-                          onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
-                          placeholder="例如：大数据应用工程师"
-                          className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
+                <div className="col-span-2">
+                  <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div className="space-y-3">
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={useKnowledgeBase}
+                          onChange={(e) => {
+                            setUseKnowledgeBase(e.target.checked);
+                            if (!e.target.checked) {
+                              setSelectedKBForInterview('');
+                            }
+                          }}
+                          className="w-5 h-5 rounded accent-indigo-600"
                         />
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {['初级', '中级', '高级', '资深'].map((d) => (
-                            <button
-                              key={d}
-                              onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
-                              className={`py-2 rounded-lg text-sm font-bold transition-all ${
-                                formData.difficulty === d 
-                                  ? 'bg-indigo-600 text-white shadow-md' 
-                                  : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 border border-slate-200 dark:border-slate-600'
-                              }`}
-                            >
-                              {d}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <button 
-                        onClick={startInterview}
-                        disabled={loading || !resumeFile}
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                      >
-                        {loading ? (
-                          <>
-                            <Loader2 className="animate-spin" size={18} />
-                            <span>分析中...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles size={18} />
-                            <span>开始分析</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 右侧：分析结果预览 */}
-                  <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-                    {resumeAnalysis ? (
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
-                          <CheckCircle className="text-green-500 mr-2" size={20} />
-                          分析结果
-                        </h3>
-                        <div className="text-center py-8">
-                          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 text-white mb-4">
-                            <div className="text-2xl font-black">{resumeScore}%</div>
-                          </div>
-                          <p className="text-sm font-bold text-slate-600 dark:text-slate-400">整体匹配度</p>
-                        </div>
-                        <button
-                          onClick={() => setResumeTab('analysis')}
-                          className="w-full py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg font-bold hover:bg-indigo-100 transition-colors"
-                        >
-                          查看详细分析 →
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                          <BrainCircuit className="text-slate-400" size={32} />
-                        </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">上传简历后将显示分析结果</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* 分析结果标签 */}
-              {resumeTab === 'analysis' && (
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800">
-                  {resumeAnalysis ? (
-                    <div className="space-y-6">
-                      {/* 整体匹配度 */}
-                      <div className="text-center pb-6 border-b border-slate-200 dark:border-slate-700">
-                        <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 text-white mb-4">
-                          <div className="text-4xl font-black">{resumeScore}%</div>
-                        </div>
-                        <p className="text-lg font-bold text-slate-700 dark:text-slate-300">整体匹配度</p>
-                      </div>
-
-                      {/* 详细分析 */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* 基本信息 */}
-                        {resumeAnalysis.basic_info && (
-                          <div className="space-y-3">
-                            <h4 className="font-bold text-slate-800 dark:text-white flex items-center">
-                              <span className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center text-xs mr-2">📋</span>
-                              基本信息分析
-                            </h4>
-                            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-2 text-sm">
-                              {resumeAnalysis.basic_info.education && (
-                                <div><span className="text-slate-500">学历：</span><span className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.education}</span></div>
-                              )}
-                              {resumeAnalysis.basic_info.major && (
-                                <div><span className="text-slate-500">专业：</span><span className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.major}</span></div>
-                              )}
-                              {resumeAnalysis.basic_info.work_years > 0 && (
-                                <div><span className="text-slate-500">工作年限：</span><span className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.work_years} 年</span></div>
-                              )}
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                          使用我的知识库增强题目
+                        </span>
+                      </label>
+                      
+                      {useKnowledgeBase && (
+                        <div className="ml-8 space-y-2">
+                          {loadingKBList ? (
+                            <div className="flex items-center justify-center py-3">
+                              <Loader2 className="animate-spin text-indigo-500 mr-2" size={16} />
+                              <span className="text-sm text-slate-500">加载知识库...</span>
                             </div>
-                          </div>
-                        )}
-
-                        {/* 匹配度分析 */}
-                        <div className="space-y-3">
-                          <h4 className="font-bold text-slate-800 dark:text-white flex items-center">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs mr-2">📊</span>
-                            岗位匹配度
-                          </h4>
-                          <div className="space-y-3">
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span className="text-slate-600 dark:text-slate-400">技术匹配</span>
-                                <span className="font-bold text-indigo-600">{resumeAnalysis.match_score?.technical || 0}%</span>
-                              </div>
-                              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div className="bg-indigo-500 h-2 rounded-full transition-all" style={{width: `${resumeAnalysis.match_score?.technical || 0}%`}}></div>
-                              </div>
+                          ) : knowledgeBases.length === 0 ? (
+                            <div className="text-sm text-slate-500 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                              还没有上传任何知识库，请先在知识库模块上传
                             </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span className="text-slate-600 dark:text-slate-400">项目经验</span>
-                                <span className="font-bold text-violet-600">{resumeAnalysis.match_score?.experience || 0}%</span>
-                              </div>
-                              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div className="bg-violet-500 h-2 rounded-full transition-all" style={{width: `${resumeAnalysis.match_score?.experience || 0}%`}}></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 技术栈 */}
-                      {resumeAnalysis.technical_skills && resumeAnalysis.technical_skills.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="font-bold text-slate-800 dark:text-white flex items-center">
-                            <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 flex items-center justify-center text-xs mr-2">💻</span>
-                            技术栈标签
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {resumeAnalysis.technical_skills.slice(0, 10).map((skill, idx) => (
-                              <span key={idx} className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 建议改进 */}
-                      {resumeAnalysis.improvement_suggestions && resumeAnalysis.improvement_suggestions.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="font-bold text-slate-800 dark:text-white flex items-center">
-                            <span className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 flex items-center justify-center text-xs mr-2">💡</span>
-                            改进建议
-                          </h4>
-                          <ul className="space-y-2">
-                            {resumeAnalysis.improvement_suggestions.map((suggestion, idx) => (
-                              <li key={idx} className="flex items-start text-sm text-slate-600 dark:text-slate-400">
-                                <span className="text-indigo-500 mr-2">•</span>
-                                <span>{suggestion}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-4">
-                        <AlertCircle className="text-amber-600" size={40} />
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">暂无分析结果</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">请先上传简历并完成分析</p>
-                      <button
-                        onClick={() => setResumeTab('upload')}
-                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all"
-                      >
-                        前往上传
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 同步简历分析标签 */}
-              {resumeTab === 'sync' && (
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800">
-                  {resumeAnalysis ? (
-                    <div className="max-w-2xl mx-auto space-y-6">
-                      <div className="text-center">
-                        <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">同步简历分析到个人档案</h3>
-                        <p className="text-slate-500 dark:text-slate-400">将分析结果保存到您的个人档案中，便于后续查看和管理</p>
-                      </div>
-
-                      {/* 预览要同步的数据 */}
-                      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-6 space-y-4">
-                        <h4 className="font-bold text-slate-700 dark:text-slate-300">待同步信息</h4>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                          {resumeAnalysis.basic_info?.education && (
-                            <div>
-                              <span className="text-slate-500">学历</span>
-                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.education}</p>
-                            </div>
-                          )}
-                          {resumeAnalysis.basic_info?.major && (
-                            <div>
-                              <span className="text-slate-500">专业</span>
-                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.major}</p>
-                            </div>
-                          )}
-                          {resumeAnalysis.basic_info?.work_years > 0 && (
-                            <div>
-                              <span className="text-slate-500">工作年限</span>
-                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.basic_info.work_years} 年</p>
-                            </div>
-                          )}
-                          {resumeAnalysis.match_score?.technical && (
-                            <div>
-                              <span className="text-slate-500">技术评分</span>
-                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.match_score.technical}</p>
-                            </div>
-                          )}
-                          {resumeAnalysis.match_score?.experience && (
-                            <div>
-                              <span className="text-slate-500">经验评分</span>
-                              <p className="font-medium text-slate-700 dark:text-slate-200">{resumeAnalysis.match_score.experience}</p>
-                            </div>
-                          )}
-                        </div>
-
-                        {resumeAnalysis.technical_skills && resumeAnalysis.technical_skills.length > 0 && (
-                          <div>
-                            <span className="text-slate-500 text-sm">技术技能</span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {resumeAnalysis.technical_skills.map((skill, idx) => (
-                                <span key={idx} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
-                                  {skill}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* 同步按钮 */}
-                      <div className="flex gap-4 justify-center">
-                        <button
-                          onClick={() => setResumeTab('analysis')}
-                          className="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold rounded-lg transition-all"
-                        >
-                          返回分析
-                        </button>
-                        <button
-                          onClick={() => syncResumeToProfile()}
-                          disabled={loading}
-                          className="flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-lg transition-all"
-                        >
-                          {loading ? (
-                            <>
-                              <Loader2 size={18} className="animate-spin" />
-                              同步中...
-                            </>
                           ) : (
-                            <>
-                              <Save size={18} />
-                              立即同步
-                            </>
+                            <select
+                              value={selectedKBForInterview}
+                              onChange={(e) => setSelectedKBForInterview(e.target.value)}
+                              className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value="">-- 选择知识库 --</option>
+                              {knowledgeBases.map((kb) => (
+                                <option key={kb.name} value={kb.name}>
+                                  {kb.name}
+                                </option>
+                              ))}
+                            </select>
                           )}
-                        </button>
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                        <AlertCircle className="text-slate-600" size={40} />
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">暂无数据可同步</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">请先完成简历分析</p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {mode === 'company' && (
+              <>
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[5, 10, 15, 20].map((num) => (
                       <button
-                        onClick={() => setResumeTab('analysis')}
-                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all"
+                        key={num}
+                        onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
+                        className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                          formData.question_count === num 
+                            ? 'bg-indigo-600 text-white shadow-md' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        }`}
                       >
-                        前往分析
+                        {num} 道
                       </button>
-                    </div>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              )}
-            </div>
-          )}
 
-          {mode === 'company' && (
-            <>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">题目数量</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[5, 10, 15, 20].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
-                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                        formData.question_count === num 
-                          ? 'bg-indigo-600 text-white shadow-md' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                      }`}
-                    >
-                      {num} 道
-                    </button>
-                  ))}
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {['初级', '中级', '高级', '资深'].map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
+                        className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
+                          formData.difficulty === d 
+                            ? 'bg-indigo-600 text-white shadow-md' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </>
+            )}
+          </div>
 
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">难度等级</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {['初级', '中级', '高级', '资深'].map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
-                      className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
-                        formData.difficulty === d 
-                          ? 'bg-indigo-600 text-white shadow-md' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                      }`}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {mode !== 'resume' && (
           <button 
             onClick={startInterview}
             disabled={loading}
@@ -1390,8 +1007,30 @@ const Interview = ({ prefillKeywords, username }) => {
             {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
             <span className="text-lg">{loading ? 'AI 正在为您定制面试题...' : '立即开始面试'}</span>
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="py-10">
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl p-12 text-center space-y-6">
+            <div className="w-24 h-24 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center mx-auto text-indigo-600">
+              <Sparkles size={48} />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white">此页面已迁移</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-lg">
+                此页面已迁移到 <span className="font-bold text-indigo-600">AI面试的简历定制模块</span>
+              </p>
+            </div>
+            <div className="pt-4">
+              <button 
+                onClick={() => setMode('company')}
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
+              >
+                返回公司面试
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Output Area - 只在非 resume 模式或 resumeTab 不是 upload/analysis 时显示 */}
       {mode !== 'resume' && (content || loading || chatHistory.length > 0) && (
@@ -1548,64 +1187,6 @@ const Interview = ({ prefillKeywords, username }) => {
               </div>
             </div>
             )
-          )}
-
-          {/* Answer & Evaluation Area (Only for Resume Mode now) */}
-          {mode === 'resume' && (content || resumeAnalysis) && (
-            <div className="flex flex-col space-y-6">
-              {/* ... (original answer area) ... */}
-               <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl p-8 flex flex-col flex-1">
-                <h4 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                  <Send size={18} className="mr-2 text-indigo-500" />
-                  你的回答
-                </h4>
-                <textarea 
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  placeholder="在此输入你的回答，点击下方按钮获取 AI 评估..."
-                  className="flex-1 w-full p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none font-medium text-slate-700 dark:text-slate-200"
-                />
-                <button 
-                  onClick={submitAnswer}
-                  disabled={evaluating || !userAnswer.trim()}
-                  className="mt-4 w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
-                >
-                  {evaluating ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} />}
-                  <span>{evaluating ? 'AI 正在评估中...' : '提交回答并评估'}</span>
-                </button>
-              </div>
-
-              {evaluation && (
-                <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col animate-in zoom-in duration-300">
-                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-green-50/30 dark:bg-green-900/10 flex justify-between items-center">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center text-green-600">
-                        <CheckCircle size={20} />
-                      </div>
-                      <h4 className="font-bold text-slate-800 dark:text-white">AI 评估反馈</h4>
-                    </div>
-                    <button 
-                      onClick={saveToWrongAnswers}
-                      disabled={isSaved}
-                      className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        isSaved ? 'bg-green-500 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
-                      }`}
-                    >
-                      {isSaved ? <CheckCircle size={14} /> : <Save size={14} />}
-                      <span>{isSaved ? '已存入错题册' : '存入错题册'}</span>
-                    </button>
-                  </div>
-                  <div 
-                    ref={evalScrollRef}
-                    className="p-8 overflow-y-auto max-h-[300px] prose dark:prose-invert max-w-none text-sm leading-relaxed"
-                  >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {evaluation}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-              )}
-            </div>
           )}
         </div>
         </>
