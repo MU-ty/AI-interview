@@ -109,10 +109,10 @@ function App() {
         <div className="p-6 flex items-center justify-between">
           {isSidebarOpen && (
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Sparkles size={18} className="text-white" />
               </div>
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400">
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400">
                 AI Interview
               </h1>
             </div>
@@ -132,8 +132,8 @@ function App() {
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-200 group ${
                 activeTab === item.id 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20' 
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-blue-900/20' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               <item.icon size={22} className={`${activeTab === item.id ? 'text-white' : 'group-hover:scale-110 transition-transform'}`} />
@@ -159,7 +159,7 @@ function App() {
                 }}
               />
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold shadow-md">
                 {displayName ? displayName[0].toUpperCase() : (username ? username[0].toUpperCase() : 'U')}
               </div>
             )}
@@ -188,8 +188,8 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Background Decorative Elements */}
-        <div className="absolute top-0 right-0 -z-10 w-96 h-96 bg-indigo-100/50 dark:bg-indigo-900/10 blur-3xl rounded-full -mr-48 -mt-48" />
-        <div className="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-purple-100/50 dark:bg-purple-900/10 blur-3xl rounded-full -ml-48 -mb-48" />
+        <div className="absolute top-0 right-0 -z-10 w-96 h-96 bg-blue-100/50 dark:bg-blue-900/10 blur-3xl rounded-full -mr-48 -mt-48" />
+        <div className="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-cyan-100/50 dark:bg-cyan-900/10 blur-3xl rounded-full -ml-48 -mb-48" />
 
         <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center px-10 justify-between sticky top-0 z-10">
           <div>
