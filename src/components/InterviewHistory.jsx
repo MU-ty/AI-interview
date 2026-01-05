@@ -72,6 +72,8 @@ const InterviewHistory = ({ username }) => {
     } finally {
       setLoading(false);
     }
+  }; // 结束 fetchHistory 函数（补上的闭合括号）
+
   // 删除记录
   const handleDelete = async (id) => {
     try {
@@ -440,8 +442,8 @@ export default InterviewHistory;
                   <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 text-slate-700 dark:text-slate-300 whitespace-pre-wrap text-sm leading-relaxed max-h-96 overflow-y-auto">
                     {selectedRecord.summary}
                   </div>
-                </div>
-              )}
+            
+            
 
               {/* Questions */}
               {selectedRecord.questions && (
@@ -459,10 +461,5 @@ export default InterviewHistory;
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+
+
