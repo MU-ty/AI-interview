@@ -64,7 +64,7 @@ const Login = ({ onLoginSuccess }) => {
       <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         <div className="p-10">
           <div className="text-center mb-10">
-            <div className="inline-flex p-4 bg-indigo-100 dark:bg-indigo-900/40 rounded-3xl text-indigo-600 mb-6">
+            <div className="inline-flex p-4 bg-blue-100 dark:bg-blue-900/40 rounded-3xl text-blue-600 mb-6">
               <LogIn size={32} />
             </div>
             <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
@@ -86,7 +86,7 @@ const Login = ({ onLoginSuccess }) => {
                   required
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
                   placeholder="输入用户名"
                 />
               </div>
@@ -102,7 +102,7 @@ const Login = ({ onLoginSuccess }) => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -119,7 +119,7 @@ const Login = ({ onLoginSuccess }) => {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
                   placeholder="输入密码"
                 />
               </div>
@@ -134,7 +134,7 @@ const Login = ({ onLoginSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center disabled:opacity-50"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center disabled:opacity-50"
             >
               {loading ? (
                 <Loader2 className="animate-spin mr-2" size={24} />
@@ -147,7 +147,7 @@ const Login = ({ onLoginSuccess }) => {
           <div className="mt-8 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center justify-center mx-auto"
+              className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center justify-center mx-auto"
             >
               {isLogin ? (
                 <>

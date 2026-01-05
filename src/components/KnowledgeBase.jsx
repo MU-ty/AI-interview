@@ -274,7 +274,7 @@ const KnowledgeBase = ({ username }) => {
         
         <div className="relative">
           <h3 className="text-2xl font-bold mb-2 flex items-center text-slate-800 dark:text-white">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl mr-3 text-indigo-600">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-xl mr-3 text-blue-600">
               <Upload size={24} />
             </div>
             上传知识文档
@@ -291,12 +291,12 @@ const KnowledgeBase = ({ username }) => {
               value={knowledgeBaseName}
               onChange={(e) => setKnowledgeBaseName(e.target.value)}
               placeholder="请输入知识库名称，例如：Java面经、Python学习资料"
-              className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           
-          <div className="group relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-[2rem] p-12 flex flex-col items-center justify-center space-y-6 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all duration-300 cursor-pointer">
-            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 rounded-3xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform duration-300 shadow-inner">
+          <div className="group relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-[2rem] p-12 flex flex-col items-center justify-center space-y-6 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all duration-300 cursor-pointer">
+            <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-3xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300 shadow-inner">
               <File size={40} />
             </div>
             <div className="text-center">
@@ -314,7 +314,7 @@ const KnowledgeBase = ({ username }) => {
               <div className="flex space-x-4 pt-4 animate-in zoom-in duration-300">
                 <button 
                   onClick={() => setShowPreview(true)}
-                  className="px-6 py-3 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-2xl transition-colors flex items-center"
+                  className="px-6 py-3 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-2xl transition-colors flex items-center"
                 >
                   <Eye size={18} className="mr-2" />
                   预览文件
@@ -332,7 +332,7 @@ const KnowledgeBase = ({ username }) => {
                 <button 
                   onClick={uploadFile}
                   disabled={uploading}
-                  className="px-8 py-3 bg-indigo-600 text-white text-sm font-bold rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none disabled:opacity-50 flex items-center transform hover:-translate-y-0.5 transition-all"
+                  className="px-8 py-3 bg-blue-600 text-white text-sm font-bold rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none disabled:opacity-50 flex items-center transform hover:-translate-y-0.5 transition-all"
                 >
                   {uploading ? <Loader2 className="animate-spin mr-2" size={18} /> : <CheckCircle2 className="mr-2" size={18} />}
                   {uploading ? '正在解析文档...' : '开始解析入库'}
@@ -349,7 +349,7 @@ const KnowledgeBase = ({ username }) => {
           <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <div className="flex items-center space-x-3">
-                <File className="text-indigo-600" size={24} />
+                <File className="text-blue-600" size={24} />
                 <h4 className="font-bold text-slate-800 dark:text-white truncate max-w-md">{file?.name}</h4>
               </div>
               <button 
@@ -362,7 +362,7 @@ const KnowledgeBase = ({ username }) => {
             <div className="flex-1 overflow-auto p-8">
               {isPreviewLoading ? (
                 <div className="flex flex-col items-center justify-center h-64">
-                  <Loader2 className="animate-spin text-indigo-500 mb-4" size={40} />
+                  <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
                   <p className="text-slate-500 font-medium">正在解析 Word 文档...</p>
                 </div>
               ) : file?.type === 'application/pdf' ? (
@@ -460,7 +460,7 @@ const KnowledgeBase = ({ username }) => {
                     </span>
                     <button
                       onClick={() => previewUploadedFile(selectedKB, file.name)}
-                      className="p-1.5 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      className="p-1.5 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                       title="预览文件"
                     >
                       <Eye size={16} />
@@ -476,7 +476,7 @@ const KnowledgeBase = ({ username }) => {
       {/* Query Section */}
       <section className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
         <h3 className="text-2xl font-bold mb-2 flex items-center text-slate-800 dark:text-white">
-          <div className="p-2 bg-purple-100 dark:bg-purple-900/40 rounded-xl mr-3 text-purple-600">
+          <div className="p-2 bg-cyan-100 dark:bg-cyan-900/40 rounded-xl mr-3 text-cyan-600">
             <Search size={24} />
           </div>
           知识库检索
@@ -490,12 +490,12 @@ const KnowledgeBase = ({ username }) => {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="输入问题，例如：'Redis 的持久化机制有哪些？'"
-              className="w-full p-5 pr-16 rounded-[1.5rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all text-lg font-medium"
+              className="w-full p-5 pr-16 rounded-[1.5rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all text-lg font-medium"
             />
             <button 
               onClick={handleSearch}
               disabled={searching}
-              className="absolute right-3 top-3 bottom-3 px-4 bg-purple-600 text-white rounded-2xl hover:bg-purple-700 transition-all flex items-center justify-center shadow-md disabled:opacity-50"
+              className="absolute right-3 top-3 bottom-3 px-4 bg-cyan-600 text-white rounded-2xl hover:bg-cyan-700 transition-all flex items-center justify-center shadow-md disabled:opacity-50"
             >
               {searching ? <Loader2 className="animate-spin" size={22} /> : <Search size={22} />}
             </button>
@@ -504,9 +504,9 @@ const KnowledgeBase = ({ username }) => {
 
         {searchResult && (
           <div className="mt-10 space-y-8 animate-in slide-in-from-top-4 duration-500">
-            <div className="p-8 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10 rounded-[2rem] border border-purple-100 dark:border-purple-900/30 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-purple-600" />
-              <h4 className="font-bold text-purple-900 dark:text-purple-300 mb-4 flex items-center uppercase tracking-wider text-sm">
+            <div className="p-8 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/10 dark:to-blue-900/10 rounded-[2rem] border border-cyan-100 dark:border-cyan-900/30 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-cyan-600" />
+              <h4 className="font-bold text-cyan-900 dark:text-cyan-300 mb-4 flex items-center uppercase tracking-wider text-sm">
                 <Sparkles size={16} className="mr-2" />
                 AI 深度回答
               </h4>
@@ -526,9 +526,9 @@ const KnowledgeBase = ({ username }) => {
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {searchResult.citations.map((cite, idx) => (
-                    <div key={idx} className="p-6 bg-white dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-900 transition-colors group">
+                    <div key={idx} className="p-6 bg-white dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-cyan-200 dark:hover:border-cyan-900 transition-colors group">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs font-bold">
+                        <span className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full text-xs font-bold">
                           SOURCE #{idx + 1}
                         </span>
                         <span className="text-slate-400 text-xs font-bold">匹配度: {(cite.score * 100).toFixed(1)}%</span>
@@ -551,7 +551,7 @@ const KnowledgeBase = ({ username }) => {
           <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <div className="flex items-center space-x-3">
-                <File className="text-indigo-600" size={24} />
+                <File className="text-blue-600" size={24} />
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-white truncate max-w-md">{uploadedPreviewData.filename}</h4>
                   <p className="text-xs text-slate-500 mt-1">类型: {(uploadedPreviewData.filetype || 'unknown').toUpperCase()}</p>

@@ -456,14 +456,14 @@ const ResumeModule = ({ username }) => {
         <div className="flex items-center justify-between">
           <button
             onClick={() => setStartResumeInterview(false)}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-all shadow-sm"
           >
             <X size={18} />
             <span className="font-bold text-sm">退出面试模式</span>
           </button>
-          <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">简历定制面试中</span>
+          <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-900/50">
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+            <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">简历定制面试中</span>
           </div>
         </div>
 
@@ -471,7 +471,7 @@ const ResumeModule = ({ username }) => {
           {/* 问题展示 */}
           <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none flex flex-col h-[600px]">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600">
+              <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600">
                 <MessageSquare size={20} />
               </div>
               <h3 className="text-xl font-black text-slate-900 dark:text-white">
@@ -513,13 +513,13 @@ const ResumeModule = ({ username }) => {
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 placeholder="请详细描述您的回答，AI 将根据您的回答进行深度评估..."
-                className="flex-1 w-full p-6 border border-slate-200 dark:border-slate-700 rounded-3xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white resize-none focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium leading-relaxed"
+                className="flex-1 w-full p-6 border border-slate-200 dark:border-slate-700 rounded-3xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium leading-relaxed"
               />
               
               <button
                 onClick={submitAnswer}
                 disabled={isEvaluating || !userAnswer.trim()}
-                className="w-full mt-6 py-5 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 dark:shadow-none active:scale-[0.98]"
+                className="w-full mt-6 py-5 bg-gradient-to-r from-blue-600 to-cyan-700 hover:from-blue-700 hover:to-cyan-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 dark:shadow-none active:scale-[0.98]"
               >
                 {isEvaluating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} />}
                 <span className="uppercase tracking-widest text-sm">{isEvaluating ? '正在深度评估...' : '提交回答并获取反馈'}</span>
@@ -555,7 +555,7 @@ const ResumeModule = ({ username }) => {
       {/* Header Section */}
       <div className="text-center space-y-4">
         <h1 className="text-5xl font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center gap-4">
-          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 dark:shadow-none">
+          <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 dark:shadow-none">
             <BrainCircuit size={32} />
           </div>
           智能简历分析系统
@@ -578,7 +578,7 @@ const ResumeModule = ({ username }) => {
               onClick={() => setSubTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
                 subTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-none'
                   : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
@@ -595,7 +595,7 @@ const ResumeModule = ({ username }) => {
           <div className="lg:col-span-5 space-y-8">
             <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600">
+                <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600">
                   <Upload size={20} />
                 </div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white">上传简历</h3>
@@ -605,7 +605,7 @@ const ResumeModule = ({ username }) => {
               <div className={`relative border-2 border-dashed rounded-[2rem] p-10 text-center transition-all duration-500 ${
                 resumeFile 
                   ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10' 
-                  : 'border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600'
+                  : 'border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600'
               }`}>
                 <input
                   type="file"
@@ -658,7 +658,7 @@ const ResumeModule = ({ username }) => {
                       value={targetPosition}
                       onChange={(e) => setTargetPosition(e.target.value)}
                       placeholder="例如：大模型应用工程师"
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                      className=\"w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium\"
                     />
                   </div>
                 </div>
@@ -669,14 +669,14 @@ const ResumeModule = ({ username }) => {
                     value={jobDescription}
                     onChange={(e) => setJobDescription(e.target.value)}
                     placeholder="粘贴岗位要求，AI 将进行精准匹配分析..."
-                    className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl h-32 resize-none focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                    className=\"w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl h-32 resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium\"
                   />
                 </div>
 
                 <button
                   onClick={uploadAndAnalyzeResume}
                   disabled={!resumeFile || loading}
-                  className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 dark:shadow-none active:scale-[0.98]"
+                  className=\"w-full py-5 bg-gradient-to-r from-blue-600 to-cyan-700 hover:from-blue-700 hover:to-cyan-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 dark:shadow-none active:scale-[0.98]\"
                 >
                   {loading ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
                   <span className="uppercase tracking-widest text-sm">{loading ? '正在深度分析中...' : '开始智能分析'}</span>
@@ -699,7 +699,7 @@ const ResumeModule = ({ username }) => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setStartResumeInterview(true)}
-                      className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-100 transition-all"
+                      className=\"px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-100 transition-all\"
                     >
                       定制面试
                     </button>
@@ -725,7 +725,7 @@ const ResumeModule = ({ username }) => {
                         cy="50"
                       />
                       <circle
-                        className="text-indigo-600 stroke-current transition-all duration-1000 ease-out"
+                        className="text-blue-600 stroke-current transition-all duration-1000 ease-out"
                         strokeWidth="8"
                         strokeDasharray={251.2}
                         strokeDashoffset={251.2 - (251.2 * (resumeAnalysis.match_score?.overall || 0)) / 100}
@@ -777,7 +777,7 @@ const ResumeModule = ({ username }) => {
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full transition-all duration-1000"
+                          className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full transition-all duration-1000"
                           style={{ width: `${resumeAnalysis.match_score?.experience || 0}%` }}
                         ></div>
                       </div>
@@ -805,7 +805,7 @@ const ResumeModule = ({ username }) => {
 
                     <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-2 mb-3">
-                        <Sparkles size={14} className="text-purple-500" />
+                        <Sparkles size={14} className="text-cyan-500" />
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI 综合评估</span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
@@ -818,13 +818,13 @@ const ResumeModule = ({ username }) => {
                 {/* Improvement Suggestions */}
                 <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
                   <h4 className="text-sm font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <TrendingUp size={16} className="text-indigo-500" />
+                    <TrendingUp size={16} className="text-blue-500" />
                     改进建议
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {resumeAnalysis.improvement_suggestions?.slice(0, 4).map((sug, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-indigo-50/30 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100/50 dark:border-indigo-900/20">
-                        <ChevronRight size={14} className="text-indigo-500 mt-0.5 shrink-0" />
+                      <div key={i} className="flex items-start gap-3 p-3 bg-blue-50/30 dark:bg-blue-900/10 rounded-2xl border border-blue-100/50 dark:border-blue-900/20">
+                        <ChevronRight size={14} className="text-blue-500 mt-0.5 shrink-0" />
                         <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">{sug}</p>
                       </div>
                     ))}

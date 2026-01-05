@@ -45,7 +45,7 @@ const Weakness = ({ onStartPractice, username }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
-        <Loader2 className="animate-spin text-indigo-500" size={40} />
+        <Loader2 className="animate-spin text-blue-500" size={40} />
         <p className="text-slate-500">正在加载薄弱点分析数据...</p>
       </div>
     );
@@ -57,7 +57,7 @@ const Weakness = ({ onStartPractice, username }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
           { label: '错题总数', value: wrongAnswers.length, icon: AlertTriangle, color: 'red', sub: '需要重点关注' },
-          { label: '知识领域', value: analysis?.weak_points?.length || 0, icon: BrainCircuit, color: 'indigo', sub: '覆盖薄弱环节' },
+          { label: '知识领域', value: analysis?.weak_points?.length || 0, icon: BrainCircuit, color: 'blue', sub: '覆盖薄弱环节' },
           { label: '掌握进度', value: '65%', icon: BarChart3, color: 'green', sub: '较上周提升 12%' },
         ].map((stat, idx) => (
           <div key={idx} className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group">
@@ -80,10 +80,10 @@ const Weakness = ({ onStartPractice, username }) => {
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-2xl font-bold flex items-center text-slate-800 dark:text-white">
-              <History className="mr-3 text-indigo-500" size={24} />
+              <History className="mr-3 text-blue-500" size={24} />
               错题记录
             </h3>
-            <button className="text-sm font-bold text-indigo-600 hover:text-indigo-700">查看全部</button>
+            <button className="text-sm font-bold text-blue-600 hover:text-blue-700">查看全部</button>
           </div>
           
           {wrongAnswers.length === 0 ? (
@@ -96,7 +96,7 @@ const Weakness = ({ onStartPractice, username }) => {
           ) : (
             <div className="space-y-6">
               {wrongAnswers.map((item, idx) => (
-                <div key={idx} className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-800 transition-all group relative overflow-hidden">
+                <div key={idx} className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm hover:border-blue-300 dark:hover:border-blue-800 transition-all group relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-2 h-full bg-red-500/20 group-hover:bg-red-500 transition-colors" />
                   
                   <div className="flex justify-between items-start mb-6">
@@ -129,7 +129,7 @@ const Weakness = ({ onStartPractice, username }) => {
         {/* Analysis Sidebar */}
         <div className="space-y-8">
           <h3 className="text-2xl font-bold flex items-center text-slate-800 dark:text-white">
-            <BarChart3 className="mr-3 text-indigo-500" size={24} />
+            <BarChart3 className="mr-3 text-blue-500" size={24} />
             智能分析
           </h3>
           
@@ -141,13 +141,13 @@ const Weakness = ({ onStartPractice, username }) => {
                 <div key={idx} className="space-y-3">
                   <div className="flex justify-between items-end">
                     <span className="font-bold text-slate-700 dark:text-slate-200">{point.name}</span>
-                    <span className="text-xs font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-md">
+                    <span className="text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">
                       {point.count} 次错误
                     </span>
                   </div>
                   <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5">
                     <div 
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-sm transition-all duration-1000" 
+                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-sm transition-all duration-1000" 
                       style={{ width: `${Math.min(point.count * 20, 100)}%` }}
                     ></div>
                   </div>
@@ -159,7 +159,7 @@ const Weakness = ({ onStartPractice, username }) => {
               )}
             </div>
 
-            <div className="mt-12 p-8 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[2rem] text-white shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
+            <div className="mt-12 p-8 bg-gradient-to-br from-blue-600 to-cyan-700 rounded-[2rem] text-white shadow-xl shadow-blue-200 dark:shadow-none relative overflow-hidden group">
               <div className="absolute -right-4 -bottom-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
                 <BrainCircuit size={120} />
               </div>
@@ -172,7 +172,7 @@ const Weakness = ({ onStartPractice, username }) => {
               </p>
               <button 
                 onClick={() => onStartPractice(analysis?.weak_points?.[0]?.name || '')}
-                className="w-full py-4 bg-white text-indigo-600 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-lg active:scale-95"
+                className="w-full py-4 bg-white text-blue-600 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg active:scale-95"
               >
                 开始针对性练习
               </button>

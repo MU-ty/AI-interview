@@ -789,22 +789,22 @@ const Interview = ({ prefillKeywords, username }) => {
                 : ''
             } ${
               mode === m.id 
-                ? 'border-indigo-500 bg-white dark:bg-slate-900 shadow-xl shadow-indigo-100 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-900/20' 
-                : 'border-transparent bg-white dark:bg-slate-900 hover:border-indigo-200 dark:hover:border-indigo-800 shadow-sm'
+                ? 'border-blue-500 bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 dark:shadow-none ring-4 ring-blue-50 dark:ring-blue-900/20' 
+                : 'border-transparent bg-white dark:bg-slate-900 hover:border-blue-200 dark:hover:border-blue-800 shadow-sm'
             }`}
           >
             <div className={`p-3 rounded-2xl mb-4 transition-colors ${
-              mode === m.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600'
+              mode === m.id ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600'
             }`}>
               <m.icon size={24} />
             </div>
-            <h3 className={`font-bold text-lg ${mode === m.id ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-800 dark:text-slate-200'}`}>
+            <h3 className={`font-bold text-lg ${mode === m.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-slate-200'}`}>
               {m.name}
             </h3>
             <p className="text-sm text-slate-500 mt-1 leading-relaxed">{m.desc}</p>
             {mode === m.id && (
               <div className="absolute top-4 right-4">
-                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping" />
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-ping" />
               </div>
             )}
           </button>
@@ -814,34 +814,34 @@ const Interview = ({ prefillKeywords, username }) => {
       {/* Config Panel */}
       {mode !== 'resume' ? (
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600" />
+          <div className="absolute top-0 left-0 w-1 h-full bg-blue-600" />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {mode === 'company' && (
               <>
                 <div className="space-y-3">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                    <Building2 size={16} className="mr-2 text-indigo-500" />
+                    <Building2 size={16} className="mr-2 text-blue-500" />
                     公司名称
                   </label>
                   <input 
                     name="company_name"
                     value={formData.company_name}
                     onChange={handleInputChange}
-                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
                     placeholder="例如：阿里巴巴"
                   />
                 </div>
                 <div className="space-y-3">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                    <Sparkles size={16} className="mr-2 text-indigo-500" />
+                    <Sparkles size={16} className="mr-2 text-blue-500" />
                     应聘岗位
                   </label>
                   <input 
                     name="position"
                     value={formData.position}
                     onChange={handleInputChange}
-                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
                     placeholder="例如：Java后端开发"
                   />
                 </div>
@@ -852,14 +852,14 @@ const Interview = ({ prefillKeywords, username }) => {
               <>
                 <div className="col-span-2 space-y-3">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                    <BookOpen size={16} className="mr-2 text-indigo-500" />
+                    <BookOpen size={16} className="mr-2 text-blue-500" />
                     考察关键词
                   </label>
                   <input 
                     name="keywords"
                     value={formData.keywords}
                     onChange={handleInputChange}
-                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all font-medium"
                     placeholder="例如：Redis缓存优化, JVM调优, 分布式事务"
                   />
                 </div>
@@ -873,7 +873,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
                         className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
                           formData.difficulty === d 
-                            ? 'bg-indigo-600 text-white shadow-md' 
+                            ? 'bg-blue-600 text-white shadow-md' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -892,7 +892,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
                         className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
                           formData.question_count === num 
-                            ? 'bg-indigo-600 text-white shadow-md' 
+                            ? 'bg-blue-600 text-white shadow-md' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -915,7 +915,7 @@ const Interview = ({ prefillKeywords, username }) => {
                               setSelectedKBForInterview('');
                             }
                           }}
-                          className="w-5 h-5 rounded accent-indigo-600"
+                          className="w-5 h-5 rounded accent-blue-600"
                         />
                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
                           使用我的知识库增强题目
@@ -926,7 +926,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         <div className="ml-8 space-y-2">
                           {loadingKBList ? (
                             <div className="flex items-center justify-center py-3">
-                              <Loader2 className="animate-spin text-indigo-500 mr-2" size={16} />
+                              <Loader2 className="animate-spin text-blue-500 mr-2" size={16} />
                               <span className="text-sm text-slate-500">加载知识库...</span>
                             </div>
                           ) : knowledgeBases.length === 0 ? (
@@ -937,7 +937,7 @@ const Interview = ({ prefillKeywords, username }) => {
                             <select
                               value={selectedKBForInterview}
                               onChange={(e) => setSelectedKBForInterview(e.target.value)}
-                              className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               <option value="">-- 选择知识库 --</option>
                               {knowledgeBases.map((kb) => (
@@ -966,7 +966,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         onClick={() => setFormData(prev => ({ ...prev, question_count: num }))}
                         className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
                           formData.question_count === num 
-                            ? 'bg-indigo-600 text-white shadow-md' 
+                            ? 'bg-blue-600 text-white shadow-md' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -985,7 +985,7 @@ const Interview = ({ prefillKeywords, username }) => {
                         onClick={() => setFormData(prev => ({ ...prev, difficulty: d }))}
                         className={`py-2.5 rounded-xl text-sm font-bold transition-all ${
                           formData.difficulty === d 
-                            ? 'bg-indigo-600 text-white shadow-md' 
+                            ? 'bg-blue-600 text-white shadow-md' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -1001,7 +1001,7 @@ const Interview = ({ prefillKeywords, username }) => {
           <button 
             onClick={startInterview}
             disabled={loading}
-            className="w-full mt-10 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none flex items-center justify-center space-x-3 disabled:opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+            className="w-full mt-10 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-200 dark:shadow-none flex items-center justify-center space-x-3 disabled:opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
           >
             {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
             <span className="text-lg">{loading ? 'AI 正在为您定制面试题...' : '立即开始面试'}</span>
@@ -1010,19 +1010,19 @@ const Interview = ({ prefillKeywords, username }) => {
       ) : (
         <div className="py-10">
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl p-12 text-center space-y-6">
-            <div className="w-24 h-24 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center mx-auto text-indigo-600">
+            <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mx-auto text-blue-600">
               <Sparkles size={48} />
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-slate-800 dark:text-white">此页面已迁移</h3>
               <p className="text-slate-500 dark:text-slate-400 text-lg">
-                此页面已迁移到 <span className="font-bold text-indigo-600">AI面试的简历定制模块</span>
+                此页面已迁移到 <span className="font-bold text-blue-600">AI面试的简历定制模块</span>
               </p>
             </div>
             <div className="pt-4">
               <button 
                 onClick={() => setMode('company')}
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-200 dark:shadow-none"
               >
                 返回公司面试
               </button>
@@ -1059,7 +1059,7 @@ const Interview = ({ prefillKeywords, username }) => {
           }`}>
           {/* Resume Analysis Area */}
           {resumeAnalysis && (
-            <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-[2rem] border border-indigo-200 dark:border-indigo-800/50 shadow-xl overflow-hidden flex flex-col">
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-[2rem] border border-blue-200 dark:border-blue-800/50 shadow-xl overflow-hidden flex flex-col">
               {/* ... (resume analysis content) ... */}
             </div>
           )}
@@ -1069,7 +1069,7 @@ const Interview = ({ prefillKeywords, username }) => {
             <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col min-h-[600px]">
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center text-blue-600">
                     <Sparkles size={20} />
                   </div>
                   <div>
@@ -1093,7 +1093,7 @@ const Interview = ({ prefillKeywords, username }) => {
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[85%] rounded-2xl p-5 ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white rounded-tr-none' 
+                        ? 'bg-blue-600 text-white rounded-tr-none' 
                         : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-tl-none shadow-sm'
                     }`}>
                       <div className={`prose dark:prose-invert max-w-none ${msg.role === 'user' ? 'prose-invert' : ''}`}>
@@ -1138,13 +1138,13 @@ const Interview = ({ prefillKeywords, username }) => {
                       }
                     }}
                     placeholder="输入你的回答..."
-                    className="w-full p-4 pr-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none font-medium text-slate-700 dark:text-slate-200 max-h-32 min-h-[60px]"
+                    className="w-full p-4 pr-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none font-medium text-slate-700 dark:text-slate-200 max-h-32 min-h-[60px]"
                     rows={1}
                   />
                   <button 
                     onClick={submitAnswer}
                     disabled={evaluating || loading || !userAnswer.trim()}
-                    className="absolute right-2 bottom-2 p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute right-2 bottom-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {evaluating || loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                   </button>
@@ -1161,7 +1161,7 @@ const Interview = ({ prefillKeywords, username }) => {
               {/* ... (original content rendering) ... */}
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center text-blue-600">
                     <Sparkles size={20} />
                   </div>
                   <div>
@@ -1172,14 +1172,14 @@ const Interview = ({ prefillKeywords, username }) => {
               </div>
               <div 
                 ref={scrollRef}
-                className="p-8 overflow-y-auto prose dark:prose-invert max-w-none prose-indigo prose-p:leading-relaxed"
+                className="p-8 overflow-y-auto prose dark:prose-invert max-w-none prose-blue prose-p:leading-relaxed"
               >
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {content}
                 </ReactMarkdown>
                 {loading && !content && (
                   <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                    <Loader2 className="animate-spin text-indigo-500" size={40} />
+                    <Loader2 className="animate-spin text-blue-500" size={40} />
                     <p className="text-slate-500 font-medium animate-pulse">正在连接 AI 引擎...</p>
                   </div>
                 )}
@@ -1197,7 +1197,7 @@ const Interview = ({ prefillKeywords, username }) => {
           <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <div className="flex items-center space-x-3">
-                <FileUser className="text-indigo-600" size={24} />
+                <FileUser className="text-blue-600" size={24} />
                 <h4 className="font-bold text-slate-800 dark:text-white truncate max-w-md">{resumeFile?.name}</h4>
               </div>
               <button 
@@ -1210,7 +1210,7 @@ const Interview = ({ prefillKeywords, username }) => {
             <div className="flex-1 overflow-auto p-8">
               {isPreviewLoading ? (
                 <div className="flex flex-col items-center justify-center h-64">
-                  <Loader2 className="animate-spin text-indigo-500 mb-4" size={40} />
+                  <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
                   <p className="text-slate-500 font-medium">正在解析简历文档...</p>
                 </div>
               ) : resumeFile?.type === 'application/pdf' ? (
@@ -1238,7 +1238,7 @@ const Interview = ({ prefillKeywords, username }) => {
           <div className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center text-blue-600">
                   <FileUser size={20} />
                 </div>
                 <h4 className="font-bold text-slate-800 dark:text-white">面试总结报告</h4>
@@ -1262,7 +1262,7 @@ const Interview = ({ prefillKeywords, username }) => {
             <div className="flex-1 overflow-auto p-8 print:p-0">
               <div className="mb-8 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-5xl font-bold text-indigo-600 mb-2">{summaryData.score}</div>
+                  <div className="text-5xl font-bold text-blue-600 mb-2">{summaryData.score}</div>
                   <div className="text-sm text-slate-500 font-medium">综合评分</div>
                 </div>
               </div>
@@ -1270,7 +1270,7 @@ const Interview = ({ prefillKeywords, username }) => {
               <div className="space-y-8">
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6">
                   <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                    <Sparkles size={20} className="mr-2 text-indigo-500" />
+                    <Sparkles size={20} className="mr-2 text-blue-500" />
                     面试总结
                   </h3>
                   <div className="prose dark:prose-invert max-w-none">

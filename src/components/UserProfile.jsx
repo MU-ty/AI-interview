@@ -198,7 +198,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -218,7 +218,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-lg shadow-blue-200 dark:shadow-none"
             >
               <Edit2 className="w-4 h-4" />
               编辑
@@ -234,13 +234,13 @@ const UserProfile = ({ username, onProfileUpdate }) => {
               <img
                 src={avatarUrl}
                 alt={profile?.username || 'Avatar'}
-                className="w-32 h-32 rounded-full border-4 border-indigo-500 object-cover shadow-lg"
+                className="w-32 h-32 rounded-full border-4 border-blue-500 object-cover shadow-lg"
               />
               {isEditing && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingAvatar}
-                  className="absolute bottom-0 right-0 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition disabled:opacity-50 shadow-lg"
+                  className="absolute bottom-0 right-0 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition disabled:opacity-50 shadow-lg"
                   title="更换头像"
                 >
                   {uploadingAvatar ? (
@@ -269,7 +269,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                       type="text"
                       value={editData.username}
                       onChange={(e) => handleEditChange('username', e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -279,7 +279,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                         type="text"
                         value={editData.education}
                         onChange={(e) => handleEditChange('education', e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                        className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                       />
                     </div>
                     <div>
@@ -288,7 +288,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                         type="text"
                         value={editData.major}
                         onChange={(e) => handleEditChange('major', e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                        className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -299,7 +299,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                       min="0"
                       value={editData.work_years}
                       onChange={(e) => handleEditChange('work_years', e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                     />
                   </div>
                 </>
@@ -308,15 +308,15 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{profile?.username || '未设置'}</h2>
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                      <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       <span>{profile?.education || '未设置'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                      <Code className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                      <Code className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                       <span>{profile?.major || '未设置'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                      <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       <span>{profile?.work_years || 0} 年经验</span>
                     </div>
                   </div>
@@ -329,7 +329,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
         {/* 联系方式 */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-            <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             联系方式
           </h3>
           {isEditing ? (
@@ -341,7 +341,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                     type="email"
                     value={editData.email}
                     onChange={(e) => handleEditChange('email', e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                   />
                 </div>
                 <div>
@@ -350,7 +350,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                     type="tel"
                     value={editData.phone}
                     onChange={(e) => handleEditChange('phone', e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                   />
                 </div>
               </div>
@@ -360,7 +360,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                   type="text"
                   value={editData.location}
                   onChange={(e) => handleEditChange('location', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                 />
               </div>
               <div>
@@ -369,7 +369,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
                   value={editData.bio}
                   onChange={(e) => handleEditChange('bio', e.target.value)}
                   rows="4"
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium resize-none"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium resize-none"
                   placeholder="请输入个人简介..."
                 />
               </div>
@@ -377,15 +377,15 @@ const UserProfile = ({ username, onProfileUpdate }) => {
           ) : (
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span>{profile?.email || '未设置'}</span>
               </div>
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                <Phone className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                <Phone className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 <span>{profile?.phone || '未设置'}</span>
               </div>
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                <MapPin className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span>{profile?.location || '未设置'}</span>
               </div>
               {profile?.bio && (
@@ -399,26 +399,26 @@ const UserProfile = ({ username, onProfileUpdate }) => {
 
         {/* 技能评分 */}
         {profile?.technical_score > 0 || profile?.experience_score > 0 ? (
-          <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-2xl p-8 border border-indigo-200 dark:border-indigo-800/50 shadow-sm">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800/50 shadow-sm">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
               <Award className="w-5 h-5 text-amber-500" />
               能力评分
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
-                <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
                   {profile?.overall_score || 0}
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">总体评分</p>
               </div>
               <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
-                <div className="text-4xl font-bold text-violet-600 dark:text-violet-400">
+                <div className="text-4xl font-bold text-cyan-600 dark:text-cyan-400">
                   {profile?.technical_score || 0}
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">技术评分</p>
               </div>
               <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
-                <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
                   {profile?.experience_score || 0}
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">经验评分</p>
@@ -433,14 +433,14 @@ const UserProfile = ({ username, onProfileUpdate }) => {
           {profile?.technical_skills && profile.technical_skills.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-                <Code className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                <Code className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 技术技能
               </h3>
               <div className="flex flex-wrap gap-2">
                 {profile.technical_skills.map((skill, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 rounded-full text-sm font-medium border border-violet-200 dark:border-violet-800/50"
+                    className="px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 rounded-full text-sm font-medium border border-cyan-200 dark:border-cyan-800/50"
                   >
                     {skill}
                   </span>
@@ -472,13 +472,13 @@ const UserProfile = ({ username, onProfileUpdate }) => {
         {profile?.project_experience && profile.project_experience.projects && profile.project_experience.projects.length > 0 && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-              <Briefcase className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               项目经验
             </h3>
             <div className="space-y-4">
               {profile.project_experience.projects.map((project, idx) => (
                 <div key={idx} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <h4 className="font-bold text-indigo-600 dark:text-indigo-400">{project.name || `项目 ${idx + 1}`}</h4>
+                  <h4 className="font-bold text-blue-600 dark:text-blue-400">{project.name || `项目 ${idx + 1}`}</h4>
                   {project.description && (
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{project.description}</p>
                   )}
@@ -506,7 +506,7 @@ const UserProfile = ({ username, onProfileUpdate }) => {
             <button
               onClick={saveProfile}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-lg shadow-blue-200 dark:shadow-none font-medium disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
