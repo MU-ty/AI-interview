@@ -658,7 +658,7 @@ const ResumeModule = ({ username }) => {
                       value={targetPosition}
                       onChange={(e) => setTargetPosition(e.target.value)}
                       placeholder="例如：大模型应用工程师"
-                      className=\"w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium\"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -669,14 +669,14 @@ const ResumeModule = ({ username }) => {
                     value={jobDescription}
                     onChange={(e) => setJobDescription(e.target.value)}
                     placeholder="粘贴岗位要求，AI 将进行精准匹配分析..."
-                    className=\"w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl h-32 resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium\"
+                    className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl h-32 resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                   />
                 </div>
 
                 <button
                   onClick={uploadAndAnalyzeResume}
                   disabled={!resumeFile || loading}
-                  className=\"w-full py-5 bg-gradient-to-r from-blue-600 to-cyan-700 hover:from-blue-700 hover:to-cyan-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 dark:shadow-none active:scale-[0.98]\"
+                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-cyan-700 hover:from-blue-700 hover:to-cyan-800 text-white font-black rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 dark:shadow-none active:scale-[0.98]"
                 >
                   {loading ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
                   <span className="uppercase tracking-widest text-sm">{loading ? '正在深度分析中...' : '开始智能分析'}</span>
@@ -699,7 +699,7 @@ const ResumeModule = ({ username }) => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setStartResumeInterview(true)}
-                      className=\"px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-100 transition-all\"
+                      className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-100 transition-all"
                     >
                       定制面试
                     </button>
