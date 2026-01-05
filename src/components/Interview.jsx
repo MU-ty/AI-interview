@@ -102,6 +102,34 @@ const Interview = ({ prefillKeywords, username }) => {
       const data = await response.json();
       setSummaryData(data);
       setShowSummary(true);
+
+      // 保存面试记录到数据库
+      try {
+        const interviewData = {
+          interview_type: mode,
+          position: formData.position || formData.keywords || '',
+          company: formData.company || '',
+          questions: chatHistory.filter(msg => msg.role === 'assistant').map(msg => msg.content),
+          summary: data?.summary || data?.message || ''
+        };
+
+        const saveResponse = await fetch(`${API_BASE_URL}/interview/history/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(interviewData)
+        });
+
+        if (!saveResponse.ok) {
+          console.warn('保存面试记录到数据库失败');
+        } else {
+          console.log('面试记录已保存到数据库');
+        }
+      } catch (saveError) {
+        console.warn('保存面试记录时出错:', saveError);
+      }
     } catch (error) {
       console.error(error);
       alert('生成总结报告失败，请重试');
