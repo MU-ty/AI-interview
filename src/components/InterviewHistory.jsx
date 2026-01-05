@@ -439,27 +439,5 @@ const InterviewHistory = ({ username }) => {
 };
 
 export default InterviewHistory;
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 text-slate-700 dark:text-slate-300 whitespace-pre-wrap text-sm leading-relaxed max-h-96 overflow-y-auto">
-                    {selectedRecord.summary}
-                  </div>
-            
-            
-
-              {/* Questions */}
-              {selectedRecord.questions && (
-                <div>
-                  <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-3">面试题目</h4>
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {JSON.parse(selectedRecord.questions || '[]').map((q, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 text-sm text-slate-700 dark:text-slate-300"
-                      >
-                        <span className="font-bold text-blue-600">Q{idx + 1}:</span> {q}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
 
