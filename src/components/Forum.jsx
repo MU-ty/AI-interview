@@ -291,8 +291,19 @@ const Forum = () => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('zh-CN');
+    try {
+      let normalized = dateString;
+      if (
+        typeof normalized === 'string' &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(normalized)
+      ) {
+        normalized = `${normalized}Z`;
+      }
+      const date = new Date(normalized);
+      return date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+    } catch {
+      return String(dateString || '');
+    }
   };
 
   return (

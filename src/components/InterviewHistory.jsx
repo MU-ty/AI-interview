@@ -74,6 +74,11 @@ const InterviewHistory = ({ username }) => {
     }
   }; // 结束 fetchHistory 函数（补上的闭合括号）
 
+  useEffect(() => {
+    fetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
+
   // 删除记录
   const handleDelete = async (id) => {
     try {
@@ -110,8 +115,19 @@ const InterviewHistory = ({ username }) => {
   // 格式化日期
   const formatDate = (dateString) => {
     try {
-      const date = new Date(dateString);
+      let normalized = dateString;
+      // 后端有些时间是 UTC 但没有时区（例如 2026-01-05T12:34:56）
+      // 这里按 UTC 处理，避免显示成北京时间少 8 小时。
+      if (
+        typeof normalized === 'string' &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(normalized)
+      ) {
+        normalized = `${normalized}Z`;
+      }
+
+      const date = new Date(normalized);
       return date.toLocaleString('zh-CN', {
+        timeZone: 'Asia/Shanghai',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
