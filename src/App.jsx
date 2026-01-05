@@ -22,6 +22,7 @@ import Login from './components/Login';
 import Forum from './components/Forum';
 import UserProfile from './components/UserProfile';
 import Resume from './components/Resume';
+import InterviewHistory from './components/InterviewHistory';
 import { LogOut } from 'lucide-react';
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
 
   const menuItems = [
     { id: 'interview', name: 'AI 面试', icon: MessageSquare },
+    { id: 'history', name: '面试历史', icon: History },
     { id: 'resume', name: '简历管理', icon: File },
     { id: 'knowledge', name: '知识库管理', icon: BookOpen },
     { id: 'weakness', name: '薄弱点强化', icon: BrainCircuit },
@@ -198,6 +200,7 @@ function App() {
             </h2>
             <p className="text-sm text-slate-500 font-medium">
               {activeTab === 'interview' && '准备好迎接你的下一次挑战了吗？'}
+              {activeTab === 'history' && '查看你的面试记录，分析进度和改进方向'}
               {activeTab === 'resume' && '上传、分析简历，开启简历定制面试'}
               {activeTab === 'knowledge' && '管理你的个人知识库，提升 AI 准确度'}
               {activeTab === 'weakness' && '针对性练习，攻克你的知识盲区'}
@@ -219,6 +222,7 @@ function App() {
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           <div className="max-w-6xl mx-auto">
             {activeTab === 'interview' && <Interview prefillKeywords={prefillKeywords} username={username} />}
+            {activeTab === 'history' && <InterviewHistory username={username} />}
             {activeTab === 'resume' && <Resume username={username} />}
             {activeTab === 'knowledge' && <KnowledgeBase username={username} />}
             {activeTab === 'weakness' && <Weakness onStartPractice={handleStartPractice} username={username} />}
